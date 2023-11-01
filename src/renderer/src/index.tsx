@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import { createHashRouter, RouterProvider} from "react-router-dom";
+import { createHashRouter, RouterProvider } from 'react-router-dom'
 
 import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
@@ -15,11 +15,11 @@ import ForumPage from './pages/ForumPage'
 
 const router = createHashRouter([
     {
-        path: "/",
+        path: '/',
         element: <MainPage />,
         children: [
             {
-                path: "courses",
+                path: 'courses',
                 element: <CoursesPage />
             },
             {
