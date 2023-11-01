@@ -51,7 +51,7 @@ interface File extends FilesObjectBase {
 }
 
 interface Folder extends FilesObjectBase {
-    contents: { files: File[], folders: Folder[] }
+    contents: { files: File[]; folders: Folder[] }
 }
 
 export { CourseMetadata, File, Folder }

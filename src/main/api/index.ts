@@ -1,8 +1,8 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import type { Readable } from 'stream'
 
-import { Course, MyCoursesResponse, RawFile, RawFolder } from "./schemas.ts";
-import type { CourseMetadata, File, Folder } from "./interfaces.ts"
+import { Course, MyCoursesResponse, RawFile, RawFolder } from './schemas.ts'
+import type { CourseMetadata, File, Folder } from './interfaces.ts'
 
 const SECURITY_TOKEN_REGEX = /input type="hidden" name="security_token" value="(.*?)"/
 const LOGIN_TICKET_REGEX = /input type="hidden" name="login_ticket" value="(.*?)"/
@@ -13,7 +13,7 @@ const COURSE_FILES_SUPPORTED_REGEX = /dispatch.php\/course\/files/m
 const TIMESLOT_DATA_REGEX = /(.*?): (\d*?):(\d*?) - (\d*?):(\d*?),.*<em>(.*?)<\/em>/m
 const TIMESLOT_LOCATIONS_REGEX = /.*?index\/(.*?)\?.*?">(.*?)</g
 const TIMESLOT_SIMPLE_LOCATION_REGEX = /Ort: (.*)/
-const COURSE_ANNOUNCEMENTS_REGEX = /(<article.*news[\s\S]*?<\/article>)/mg
+const COURSE_ANNOUNCEMENTS_REGEX = /(<article.*news[\s\S]*?<\/article>)/gm
 const ANNOUNCEMENT_TITLE_REGEX = /<img .*news\.svg.*?>\s*(.*?)\s*<\/a>/m
 const ANNOUNCEMENT_AUTHOR_REGEX = /news_user.*username=(.*)".*\s*(.*?)\s*</m
 const ANNOUNCEMENT_DATE_REGEX = /news_date.*\s*(\d*)\.(\d*)\.(\d*)/m
@@ -25,13 +25,13 @@ const FILES_FOLDER_DATA_REGEX = /data-folders="(\[.*])"/m
 const FILE_AUTHOR_USERNAME_REGEX = /username=(.*)/
 
 const WEEKDAY_TO_INDEX_MAP: Record<string, CourseMetadata['timeslots'][number]['day']> = {
-    'Montag': 0,
-    'Dienstag': 1,
-    'Mittwoch': 2,
-    'Donnerstag': 3,
-    'Freitag': 4,
-    'Samstag': 5,
-    'Sonntag': 6
+    Montag: 0,
+    Dienstag: 1,
+    Mittwoch: 2,
+    Donnerstag: 3,
+    Freitag: 4,
+    Samstag: 5,
+    Sonntag: 6
 }
 
 class StudIPApi {
@@ -45,23 +45,18 @@ class StudIPApi {
 
     private async do_request<T extends unknown>(url: string, request_func: typeof axios.get) {
         const headers: Record<string, string> = {}
-        if (this.m_token)
-            headers.Cookie = `Seminar_Session=${this.m_token}`
+        if (this.m_token) headers.Cookie = `Seminar_Session=${this.m_token}`
         return request_func<T>(url, { headers, responseType: 'text' })
     }
 
     private async _get(url: string) {
         console.log('GET', this.m_host + url)
-        return this.do_request<string>(
-            this.m_host + url,
-            axios.get
-        )
+        return this.do_request<string>(this.m_host + url, axios.get)
     }
 
     private async _post<T extends unknown>(url: string, data: unknown) {
-        return this.do_request<T>(
-            this.m_host + url,
-            (url: string, config: AxiosRequestConfig) => axios.post(url, data, config)
+        return this.do_request<T>(this.m_host + url, (url: string, config: AxiosRequestConfig) =>
+            axios.post(url, data, config)
         )
     }
 
@@ -71,14 +66,15 @@ class StudIPApi {
         return !profile_text.includes('<form name="login"')
     }
 
-    public get token() { return this.m_token }
+    public get token() {
+        return this.m_token
+    }
 
     public async login_with_token(token: string): Promise<boolean> {
         this.m_token = token
 
         const login_success = await this.verify_token()
-        if (login_success)
-            return true
+        if (login_success) return true
 
         this.m_token = null
         return false
@@ -88,16 +84,15 @@ class StudIPApi {
         const root_response = await this._get('index.php')
         const security_token = root_response.data.match(SECURITY_TOKEN_REGEX)?.[1]
         const login_ticket = root_response.data.match(LOGIN_TICKET_REGEX)?.[1]
-        if (!security_token || !login_ticket)
-            return false
+        if (!security_token || !login_ticket) return false
 
         const post_response = await this._post('index.php', {
             security_token,
             login_ticket,
-            'resolution': '1920x1080',
-            'loginname': username,
+            resolution: '1920x1080',
+            loginname: username,
             password,
-            'login': ''
+            login: ''
         })
 
         const set_cookie_header = post_response.headers['set-cookie']
@@ -111,8 +106,7 @@ class StudIPApi {
             }
         }
 
-        if (!login_token)
-            return false
+        if (!login_token) return false
 
         this.m_token = login_token
         return true
@@ -121,8 +115,7 @@ class StudIPApi {
     public async get_courses(): Promise<Course[] | false> {
         const courses_res = await this._get('dispatch.php/my_courses')
         const courses_json = courses_res.data.match(COURSES_DATA_REGEX)?.[1]
-        if (!courses_json)
-            return false
+        if (!courses_json) return false
         try {
             const courses_response_parsed = MyCoursesResponse.parse(JSON.parse(courses_json))
             return Object.values(courses_response_parsed.courses)
@@ -146,15 +139,16 @@ class StudIPApi {
         for (const timeslot of timeslots_match.split('<br>')) {
             const timeslot_data_match = timeslot.match(TIMESLOT_DATA_REGEX)
             if (!timeslot_data_match) continue
-            const [,
-                weekday_name,
-                start_hour_str,
-                start_minute_str,
-                end_hour_str,
-                end_minute_str,
-                description
-            ] = timeslot_data_match
-            if (!weekday_name || !start_hour_str || !start_minute_str || !end_hour_str || !end_minute_str || !description)
+            const [, weekday_name, start_hour_str, start_minute_str, end_hour_str, end_minute_str, description] =
+                timeslot_data_match
+            if (
+                !weekday_name ||
+                !start_hour_str ||
+                !start_minute_str ||
+                !end_hour_str ||
+                !end_minute_str ||
+                !description
+            )
                 continue
             const weekday_id = WEEKDAY_TO_INDEX_MAP[weekday_name]
             if (weekday_id === undefined) continue
@@ -210,10 +204,23 @@ class StudIPApi {
             const comments_str = content.match(ANNOUNCEMENT_COMMENTS_REGEX)?.[1]
             const description = content.match(ANNOUNCEMENT_DESCRIPTION_REGEX)?.[1]
 
-            if (!title || !author_username || !author_full_name || !published_day || !published_month || !published_year || !visits_str || !description)
+            if (
+                !title ||
+                !author_username ||
+                !author_full_name ||
+                !published_day ||
+                !published_month ||
+                !published_year ||
+                !visits_str ||
+                !description
+            )
                 continue
 
-            const publish_date = new Date(Number(published_year), Number(published_month) - 1, Number(published_day)).valueOf()
+            const publish_date = new Date(
+                Number(published_year),
+                Number(published_month) - 1,
+                Number(published_day)
+            ).valueOf()
             const visits = Number(visits_str)
             const comments = Number(comments_str ?? 0)
 
@@ -256,14 +263,14 @@ class StudIPApi {
 
         files_data = files_data
             .replaceAll('&quot;', '"')
-            .replaceAll('&lt;',   '<')
-            .replaceAll('&gt;',   '>')
-            .replaceAll('&amp;',  '&')
+            .replaceAll('&lt;', '<')
+            .replaceAll('&gt;', '>')
+            .replaceAll('&amp;', '&')
         folder_data = folder_data
             .replaceAll('&quot;', '"')
-            .replaceAll('&lt;',   '<')
-            .replaceAll('&gt;',   '>')
-            .replaceAll('&amp;',  '&')
+            .replaceAll('&lt;', '<')
+            .replaceAll('&gt;', '>')
+            .replaceAll('&amp;', '&')
 
         const files: File[] = []
         let raw_files: RawFile[] = []
@@ -298,19 +305,21 @@ class StudIPApi {
             const folder_author_username = raw_folder.author_url.match(FILE_AUTHOR_USERNAME_REGEX)?.[1]
             if (!folder_author_username) continue
 
-            promises.push(this.fetch_folder_contents(raw_folder.id, course_id).then((folder_contents) => {
-                if (!folder_contents) return
-                folders.push({
-                    id: raw_folder.id,
-                    name: raw_folder.name,
-                    date_modified: raw_folder.chdate,
-                    author: {
-                        username: folder_author_username,
-                        full_name: raw_folder.author_name
-                    },
-                    contents: folder_contents
+            promises.push(
+                this.fetch_folder_contents(raw_folder.id, course_id).then((folder_contents) => {
+                    if (!folder_contents) return
+                    folders.push({
+                        id: raw_folder.id,
+                        name: raw_folder.name,
+                        date_modified: raw_folder.chdate,
+                        author: {
+                            username: folder_author_username,
+                            full_name: raw_folder.author_name
+                        },
+                        contents: folder_contents
+                    })
                 })
-            }))
+            )
         }
         await Promise.all(promises)
 
@@ -331,7 +340,6 @@ class StudIPApi {
         })
         return data_stream.data
     }
-
 }
 
 export { StudIPApi }

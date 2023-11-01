@@ -1,6 +1,6 @@
 import { create } from 'zustand'
-import type { Course } from "../../main/api/schemas.ts"
-import type {CourseMetadata, Folder} from "../../main/api/interfaces.ts"
+import type { Course } from '../../main/api/schemas.ts'
+import type { CourseMetadata, Folder } from '../../main/api/interfaces.ts'
 
 interface UserState {
     is_logged_in: boolean
@@ -26,13 +26,20 @@ const useUserState = create<UserState>((set, get) => ({
     course_metadata: {},
     fetch_course_metadata: async (course_id) => {
         const course_meta = await IPC.get_course(course_id)
-        set({ course_metadata: { ...get().course_metadata, [course_id]: course_meta } })
+        set({
+            course_metadata: {
+                ...get().course_metadata,
+                [course_id]: course_meta
+            }
+        })
     },
 
     course_files: {},
     fetch_course_files: async (course_id) => {
         const course_files = await IPC.get_course_files(course_id)
-        set({ course_files: { ...get().course_files, [course_id]: course_files }})
+        set({
+            course_files: { ...get().course_files, [course_id]: course_files }
+        })
     }
 }))
 

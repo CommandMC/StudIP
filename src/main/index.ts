@@ -1,9 +1,9 @@
 import { join } from 'path'
-import {app, BrowserWindow, ipcMain, dialog} from 'electron'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import { createWriteStream } from 'fs'
 
-import {StudIPApi} from "./api";
-// @ts-ignore
+import { StudIPApi } from './api'
+// @ts-expect-error TODO: Fix these types
 import appIcon from '../../build/icon.png?asset'
 
 let g_api: StudIPApi
@@ -32,8 +32,7 @@ ipcMain.handle('login', async (_e, username: string, password: string, server: s
     console.log(`Logging into account ${username}`)
     g_api = new StudIPApi(server)
     const login_success = await g_api.login(username, password)
-    if (login_success)
-        console.log('Login successful', g_api.token)
+    if (login_success) console.log('Login successful', g_api.token)
     return login_success ? g_api.token : false
 })
 
@@ -41,48 +40,35 @@ ipcMain.handle('login_with_token', async (_e, token: string, server: string) => 
     console.log('Logging in with token')
     g_api = new StudIPApi(server, token)
     const login_success = await g_api.verify_token()
-    if (login_success)
-        console.log('Login successful')
+    if (login_success) console.log('Login successful')
     return login_success
 })
 
-ipcMain.handle(
-    'get_courses',
-    async (_e) => {
-        console.log('Fetching courses')
-        return g_api.get_courses()
-    }
-)
+ipcMain.handle('get_courses', async (_e) => {
+    console.log('Fetching courses')
+    return g_api.get_courses()
+})
 
-ipcMain.handle(
-    'get_course',
-    async (_e, course_id: string) => {
-        console.log(`Fetching course metadata for ${course_id}`)
-        return g_api.get_course(course_id)
-    }
-)
+ipcMain.handle('get_course', async (_e, course_id: string) => {
+    console.log(`Fetching course metadata for ${course_id}`)
+    return g_api.get_course(course_id)
+})
 
-ipcMain.handle(
-    'get_course_files',
-    async (_e, course_id: string) => {
-        console.log(`Fetching files for course ${course_id}`)
-        return g_api.get_course_files(course_id)
-    }
-)
+ipcMain.handle('get_course_files', async (_e, course_id: string) => {
+    console.log(`Fetching files for course ${course_id}`)
+    return g_api.get_course_files(course_id)
+})
 
-ipcMain.handle(
-    'download_file',
-    async (_e, file_name: string, download_url: string): Promise<void> => {
-        const { canceled, filePath: file_path } = await dialog.showSaveDialog(g_window, {
-            defaultPath: file_name,
-            title: `Save "${file_name}"`,
-            filters: [ { name: 'All Files', extensions: ['*'] } ]
-        })
-        if (canceled || !file_path) return
-        const data_stream = await g_api.get_file_contents(download_url)
-        const write_stream = createWriteStream(file_path)
-        data_stream.pipe(write_stream)
-    }
-)
+ipcMain.handle('download_file', async (_e, file_name: string, download_url: string): Promise<void> => {
+    const { canceled, filePath: file_path } = await dialog.showSaveDialog(g_window, {
+        defaultPath: file_name,
+        title: `Save "${file_name}"`,
+        filters: [{ name: 'All Files', extensions: ['*'] }]
+    })
+    if (canceled || !file_path) return
+    const data_stream = await g_api.get_file_contents(download_url)
+    const write_stream = createWriteStream(file_path)
+    data_stream.pipe(write_stream)
+})
 
 app.whenReady().then(createWindow)
