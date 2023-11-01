@@ -1,0 +1,23 @@
+repos:
+    - repo: local
+      hooks:
+          - id: lint-prettier
+            name: Run Prettier to check code formatting
+            entry: pnpm exec prettier
+            args:
+                - .
+                - --check
+            stages:
+                - commit
+            language: system
+
+          - id: lint-eslint
+            name: Run ESLint to check code style
+            entry: pnpm exec eslint
+            args:
+                - .
+                - --quiet
+            stages:
+                - commit
+            language: system
+            files: '\.[tj]s(?:x)?'
