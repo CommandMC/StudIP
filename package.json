@@ -1,0 +1,36 @@
+{
+  "name": "studip",
+  "version": "1.0.0",
+  "description": "An alternative Stud.IP client",
+  "author": {
+    "name": "Katharina Dröge",
+    "email": "kate@commandmc.de"
+  },
+  "homepage": "https://www.github.com/CommandMC/StudIP",
+  "main": "./out/main/index.js",
+  "devDependencies": {
+    "@fontsource/roboto": "^5.0.8",
+    "@mui/icons-material": "^5.14.16",
+    "@mui/lab": "5.0.0-alpha.150",
+    "@mui/material": "^5.14.16",
+    "@types/react": "^18.2.33",
+    "@types/react-dom": "^18.2.14",
+    "@vitejs/plugin-react-swc": "^3.4.1",
+    "axios": "^1.6.0",
+    "electron": "^27.0.2",
+    "electron-builder": "^24.6.4",
+    "electron-vite": "^1.0.28",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.18.0",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "zod": "^3.22.4",
+    "zustand": "^4.4.5"
+  },
+  "scripts": {
+    "dev": "GTK_USE_PORTAL=1 electron-vite dev",
+    "postinstall": "electron-builder install-app-deps",
+    "build": "electron-vite build && electron-builder"
+  }
+}
