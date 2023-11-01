@@ -3,13 +3,12 @@ import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import { createWriteStream } from 'fs'
 
 import { StudIPApi } from './api'
-// @ts-expect-error TODO: Fix these types
 import appIcon from '../../build/icon.png?asset'
 
 let g_api: StudIPApi
 let g_window: BrowserWindow
 
-async function createWindow() {
+function createWindow() {
     g_window = new BrowserWindow({
         width: 1280,
         height: 720,
@@ -44,7 +43,7 @@ ipcMain.handle('login_with_token', async (_e, token: string, server: string) => 
     return login_success
 })
 
-ipcMain.handle('get_courses', async (_e) => {
+ipcMain.handle('get_courses', async () => {
     console.log('Fetching courses')
     return g_api.get_courses()
 })

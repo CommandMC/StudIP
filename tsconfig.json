@@ -13,6 +13,7 @@
         "jsx": "react-jsx",
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
+        "types": ["electron-vite/node"],
         "typeRoots": ["./node_modules/@types", "./src/typedefs"],
         "noUncheckedIndexedAccess": true
     }
