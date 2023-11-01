@@ -1,16 +1,19 @@
-import { z } from "zod";
+import { z } from 'zod'
 
-const CourseNavigation = z.union([z.literal(false), z.object({
-    attr: z.object({
-        title: z.string()
-    }),
-    icon: z.object({
-        role: z.string(),
-        shape: z.string()
-    }),
-    important: z.boolean(),
-    url: z.string()
-})])
+const CourseNavigation = z.union([
+    z.literal(false),
+    z.object({
+        attr: z.object({
+            title: z.string()
+        }),
+        icon: z.object({
+            role: z.string(),
+            shape: z.string()
+        }),
+        important: z.boolean(),
+        url: z.string()
+    })
+])
 
 const CourseBase = z.object({
     admission_binding: z.boolean(),
@@ -27,7 +30,7 @@ const CourseBase = z.object({
     is_teacher: z.boolean(),
     name: z.string(),
     navigation: z.array(CourseNavigation),
-    number: z.string(),
+    number: z.string()
 })
 type Course = z.infer<typeof CourseBase> & {
     parent: Course | null

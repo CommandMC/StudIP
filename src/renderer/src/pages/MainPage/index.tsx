@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from 'react-router-dom'
 
-import AppBar from "@mui/material/AppBar";
+import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import CssBaseline from "@mui/material/CssBaseline";
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import CssBaseline from '@mui/material/CssBaseline'
 
 import AccountCircle from '@mui/icons-material/AccountCircle'
 
-import LoadingComponent from '../../components/LoadingComponent';
-import useUserState from "../../state.ts";
+import LoadingComponent from '../../components/LoadingComponent'
+import useUserState from '../../state.ts'
 
 function MainPage() {
     const navigate = useNavigate()
@@ -41,7 +41,7 @@ function MainPage() {
                 setLoading(false)
             })
         }
-    }, []);
+    }, [])
 
     // Switch between light/dark theme depending on user preference
     // TODO: Make this configurable
@@ -55,22 +55,35 @@ function MainPage() {
     }, [prefersDarkMode])
 
     return (
-    <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AppBar position="sticky" sx={{ marginBottom: 3 }}>
-            <Toolbar>
-                {is_logged_in && (
-                    <Button variant="contained" color="success" onClick={() => { navigate('/courses') }}>Courses</Button>
-                )}
-                <Box sx={{ flexGrow: 1 }} />
-                <IconButton onClick={() => { navigate('/login') }}> <AccountCircle /> </IconButton>
-            </Toolbar>
-        </AppBar>
-        <Outlet />
-        {loading && (
-            <LoadingComponent />
-        )}
-    </ThemeProvider>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <AppBar position='sticky' sx={{ marginBottom: 3 }}>
+                <Toolbar>
+                    {is_logged_in && (
+                        <Button
+                            variant='contained'
+                            color='success'
+                            onClick={() => {
+                                navigate('/courses')
+                            }}
+                        >
+                            Courses
+                        </Button>
+                    )}
+                    <Box sx={{ flexGrow: 1 }} />
+                    <IconButton
+                        onClick={() => {
+                            navigate('/login')
+                        }}
+                    >
+                        {' '}
+                        <AccountCircle />{' '}
+                    </IconButton>
+                </Toolbar>
+            </AppBar>
+            <Outlet />
+            {loading && <LoadingComponent />}
+        </ThemeProvider>
     )
 }
 
