@@ -43,7 +43,7 @@ class StudIPApi {
         this.m_token = token
     }
 
-    private async do_request<T extends unknown>(url: string, request_func: typeof axios.get) {
+    private async do_request<T>(url: string, request_func: typeof axios.get) {
         const headers: Record<string, string> = {}
         if (this.m_token) headers.Cookie = `Seminar_Session=${this.m_token}`
         return request_func<T>(url, { headers, responseType: 'text' })
@@ -51,10 +51,10 @@ class StudIPApi {
 
     private async _get(url: string) {
         console.log('GET', this.m_host + url)
-        return this.do_request<string>(this.m_host + url, axios.get)
+        return this.do_request<string>(this.m_host + url, (url, config) => axios.get(url, config))
     }
 
-    private async _post<T extends unknown>(url: string, data: unknown) {
+    private async _post<T>(url: string, data: unknown) {
         return this.do_request<T>(this.m_host + url, (url: string, config: AxiosRequestConfig) =>
             axios.post(url, data, config)
         )
