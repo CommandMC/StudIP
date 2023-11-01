@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { contextBridge, ipcRenderer } from 'electron'
 import type { Course } from '../main/api/schemas.ts'
 import type { CourseMetadata, Folder } from '../main/api/interfaces.ts'

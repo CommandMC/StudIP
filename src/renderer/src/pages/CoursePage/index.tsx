@@ -108,7 +108,7 @@ function TimeslotCard({ timeslot }: TimeslotCardProps) {
 
 interface FileWidgetProps {
     file: File
-    on_file_click: (file: File) => void
+    on_file_click: (file: File) => unknown
 }
 function FileWidget({ file, on_file_click }: FileWidgetProps) {
     return (
