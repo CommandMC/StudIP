@@ -1,0 +1,12 @@
+appId: de.commandmc.studip
+directories:
+  buildResources: build
+files:
+  - '!.idea'
+  - '!src'
+  - '!electron.vite.config.ts'
+  - '!tsconfig.json'
+linux:
+  category: 'Education'
+  target:
+    - AppImage
