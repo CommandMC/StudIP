@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
@@ -23,7 +23,7 @@ import LoopIcon from '@mui/icons-material/Loop'
 import type { CourseMetadata, File, Folder } from '../../../../main/api/interfaces.ts'
 import useUserState from '../../state.ts'
 import LoadingComponent from '../../components/LoadingComponent.tsx'
-import { useCallback, useEffect, useState } from 'react'
+import { fuzzy_date } from '../../helpers/fuzzy_date.ts'
 
 function file_size(size_in_bytes: number): string {
     const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB']
@@ -131,6 +131,8 @@ function FileWidget({ file, on_file_click }: FileWidgetProps) {
                 <Link to={`/user/${file.author.username}`}>{file.author.full_name}</Link>
             </Box>
             {file_size(file.size)}
+            <Box flexGrow={1} />
+            <Box title={new Date(file.date_modified * 1000).toString()}>Modified: {fuzzy_date(file.date_modified)}</Box>
         </Stack>
     )
 }
@@ -154,6 +156,10 @@ function FolderWidget({ folder, on_folder_click }: FolderWidgetProps) {
                 <Link to={`/user/${folder.author.username}`}>{folder.author.full_name}</Link>
             </Box>
             {folder.contents.files.length} files, {folder.contents.folders.length} folders
+            <Box flexGrow={1} />
+            <Box title={new Date(folder.date_modified * 1000).toString()}>
+                Modified: {fuzzy_date(folder.date_modified)}
+            </Box>
         </Stack>
     )
 }
