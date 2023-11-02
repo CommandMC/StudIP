@@ -1,7 +1,6 @@
 import { join } from 'path'
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
-import { createWriteStream } from 'fs'
-import { stat, mkdir } from 'fs/promises'
+import { stat, mkdir, writeFile } from 'fs/promises'
 
 import { StudIPApi } from './api'
 import appIcon from '../../build/icon.png?asset'
@@ -67,12 +66,8 @@ ipcMain.handle('download_file', async (_e, file_name: string, download_url: stri
         filters: [{ name: 'All Files', extensions: ['*'] }]
     })
     if (canceled || !file_path) return
-    const data_stream = await g_api.get_file_contents(download_url)
-    const write_stream = createWriteStream(file_path)
-    data_stream.pipe(write_stream)
-    return new Promise((res) => {
-        write_stream.on('close', res)
-    })
+    const data = await g_api.get_file_contents(download_url)
+    await writeFile(file_path, Buffer.from(data))
 })
 
 async function sync_folder(folder: Folder, path: string) {
@@ -113,13 +108,7 @@ async function sync_file(file: File, path: string) {
 
     if (!need_to_download) return
 
-    return new Promise((res) => {
-        const write_stream = createWriteStream(full_path)
-        g_api.get_file_contents(file.download_url).then((data_stream) => {
-            data_stream.pipe(write_stream)
-            write_stream.on('close', res)
-        })
-    })
+    g_api.get_file_contents(file.download_url).then((data) => writeFile(full_path, Buffer.from(data)))
 }
 
 ipcMain.handle('sync_folder', async (_e, contents: Folder['contents'], path: string) => {

@@ -32,9 +32,6 @@ devDependencies:
   '@vitejs/plugin-react-swc':
     specifier: ^3.4.1
     version: 3.4.1(vite@4.5.0)
-  axios:
-    specifier: ^1.6.0
-    version: 1.6.0
   electron:
     specifier: ^27.0.2
     version: 27.0.2
@@ -1674,16 +1671,6 @@ packages:
     engines: {node: '>= 4.0.0'}
     dev: true
 
-  /axios@1.6.0:
-    resolution: {integrity: sha512-EZ1DYihju9pwVB+jg67ogm+Tmqc6JmhamRN6I4Zt8DfZu5lbcQGw3ozH9lFejSJgs/ibaef3A9PMXPLeefFGJg==}
-    dependencies:
-      follow-redirects: 1.15.3
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-    dev: true
-
   /babel-plugin-macros@3.1.0:
     resolution: {integrity: sha512-Cg7TFGpIr01vOQNODXOOaGz2NpCU5gl8x1qJFbb6hbZxR7XrcE2vtbAsTAbJ7/xwJtUuJEw8K8Zr/AE0LHlesg==}
     engines: {node: '>=10', npm: '>=6'}
@@ -2475,16 +2462,6 @@ packages:
 
   /flatted@3.2.9:
     resolution: {integrity: sha512-36yxDn5H7OFZQla0/jFJmbIKTdZAQHngCedGxiMmpNfEZM0sdEeT+WczLQrjK6D7o2aiyLYDnkw0R3JK0Qv1RQ==}
-    dev: true
-
-  /follow-redirects@1.15.3:
-    resolution: {integrity: sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
     dev: true
 
   /form-data@4.0.0:
@@ -3292,10 +3269,6 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
-    dev: true
-
-  /proxy-from-env@1.1.0:
-    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
     dev: true
 
   /pump@3.0.0:

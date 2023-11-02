@@ -1,6 +1,3 @@
-import axios, { AxiosRequestConfig } from 'axios'
-import type { Readable } from 'stream'
-
 import { Course, MyCoursesResponse, RawFile, RawFolder } from './schemas.ts'
 import type { CourseMetadata, File, Folder } from './interfaces.ts'
 
@@ -43,26 +40,35 @@ class StudIPApi {
         this.m_token = token
     }
 
-    private async do_request<T>(url: string, request_func: typeof axios.get) {
-        const headers: Record<string, string> = {}
+    private get_request_headers() {
+        const headers: HeadersInit = {}
         if (this.m_token) headers.Cookie = `Seminar_Session=${this.m_token}`
-        return request_func<T>(url, { headers, responseType: 'text' })
+        return headers
     }
 
-    private async _get(url: string) {
-        console.log('GET', this.m_host + url)
-        return this.do_request<string>(this.m_host + url, (url, config) => axios.get(url, config))
+    private async _get(url: string, include_host = true): Promise<Response> {
+        const full_url = include_host ? this.m_host + url : url
+        console.log('GET', full_url)
+        const headers = this.get_request_headers()
+        return fetch(full_url, {
+            headers
+        })
     }
 
-    private async _post<T>(url: string, data: unknown) {
-        return this.do_request<T>(this.m_host + url, (url: string, config: AxiosRequestConfig) =>
-            axios.post(url, data, config)
-        )
+    private async _post(url: string, data: unknown, include_host = true): Promise<Response> {
+        const full_url = include_host ? this.m_host + url : url
+        console.log('POST', full_url, data)
+        const headers = this.get_request_headers()
+        return fetch(full_url, {
+            headers,
+            method: 'POST',
+            body: JSON.stringify(data)
+        })
     }
 
     public async verify_token(): Promise<boolean> {
         const profile_res = await this._get('dispatch.php/profile')
-        const profile_text = profile_res.data
+        const profile_text = await profile_res.text()
         return !profile_text.includes('<form name="login"')
     }
 
@@ -82,8 +88,9 @@ class StudIPApi {
 
     public async login(username: string, password: string): Promise<boolean> {
         const root_response = await this._get('index.php')
-        const security_token = root_response.data.match(SECURITY_TOKEN_REGEX)?.[1]
-        const login_ticket = root_response.data.match(LOGIN_TICKET_REGEX)?.[1]
+        const response_text = await root_response.text()
+        const security_token = response_text.match(SECURITY_TOKEN_REGEX)?.[1]
+        const login_ticket = response_text.match(LOGIN_TICKET_REGEX)?.[1]
         if (!security_token || !login_ticket) return false
 
         const post_response = await this._post('index.php', {
@@ -95,7 +102,7 @@ class StudIPApi {
             login: ''
         })
 
-        const set_cookie_header = post_response.headers['set-cookie']
+        const set_cookie_header = post_response.headers.get('set-cookie')
         if (!set_cookie_header) return false
         let login_token: string | null = null
         for (const set_cookie_str of set_cookie_header) {
@@ -114,7 +121,8 @@ class StudIPApi {
 
     public async get_courses(): Promise<Course[] | false> {
         const courses_res = await this._get('dispatch.php/my_courses')
-        const courses_json = courses_res.data.match(COURSES_DATA_REGEX)?.[1]
+        const courses_text = await courses_res.text()
+        const courses_json = courses_text.match(COURSES_DATA_REGEX)?.[1]
         if (!courses_json) return false
         try {
             const courses_response_parsed = MyCoursesResponse.parse(JSON.parse(courses_json))
@@ -127,12 +135,13 @@ class StudIPApi {
 
     public async get_course(course_id: string): Promise<CourseMetadata | false> {
         const course_res = await this._get(`dispatch.php/course/overview?cid=${course_id}`)
+        const course_text = await course_res.text()
 
-        let course_title = course_res.data.match(COURSE_TITLE_REGEX)?.[1]
+        let course_title = course_text.match(COURSE_TITLE_REGEX)?.[1]
         if (!course_title) return false
         course_title = course_title.split(' ').filter(Boolean).join(' ')
 
-        const timeslots_match = course_res.data.match(COURSE_TIMESLOTS_REGEX)?.[1]
+        const timeslots_match = course_text.match(COURSE_TIMESLOTS_REGEX)?.[1]
         if (!timeslots_match) return false
 
         const timeslots: CourseMetadata['timeslots'] = []
@@ -192,7 +201,7 @@ class StudIPApi {
             })
         }
 
-        const announcements_matches = course_res.data.matchAll(COURSE_ANNOUNCEMENTS_REGEX)
+        const announcements_matches = course_text.matchAll(COURSE_ANNOUNCEMENTS_REGEX)
         const announcements: CourseMetadata['announcements'] = []
         for (const match of announcements_matches) {
             const content = match[1]
@@ -238,7 +247,7 @@ class StudIPApi {
             })
         }
 
-        const files_supported = !!course_res.data.match(COURSE_FILES_SUPPORTED_REGEX)
+        const files_supported = !!course_text.match(COURSE_FILES_SUPPORTED_REGEX)
 
         return {
             title: course_title,
@@ -256,8 +265,9 @@ class StudIPApi {
 
     private async fetch_folder_contents(folder_id: string, course_id: string): Promise<false | Folder['contents']> {
         const files_response = await this._get(`dispatch.php/course/files/index/${folder_id}?cid=${course_id}`)
-        let files_data = files_response.data.match(FILES_FILE_DATA_REGEX)?.[1]
-        let folder_data = files_response.data.match(FILES_FOLDER_DATA_REGEX)?.[1]
+        const files_text = await files_response.text()
+        let files_data = files_text.match(FILES_FILE_DATA_REGEX)?.[1]
+        let folder_data = files_text.match(FILES_FOLDER_DATA_REGEX)?.[1]
 
         if (!files_data || !folder_data) return false
 
@@ -323,8 +333,8 @@ class StudIPApi {
         }
         await Promise.all(promises)
 
-        folders.sort((a, b) => -a.name.localeCompare(b.name))
-        files.sort((a, b) => -a.name.localeCompare(b.name))
+        folders.sort((a, b) => a.name.localeCompare(b.name))
+        files.sort((a, b) => a.name.localeCompare(b.name))
 
         return {
             files,
@@ -332,13 +342,8 @@ class StudIPApi {
         }
     }
 
-    public async get_file_contents(download_url: string): Promise<Readable> {
-        const data_stream = await this.do_request<Readable>(download_url, (url, config) => {
-            config ||= {}
-            config.responseType = 'stream'
-            return axios.get(url, config)
-        })
-        return data_stream.data
+    public async get_file_contents(download_url: string) {
+        return this._get(download_url, false).then((res) => res.arrayBuffer())
     }
 }
 
