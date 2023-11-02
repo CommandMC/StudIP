@@ -14,7 +14,11 @@ const ipc = {
     get_course_files: async (course_id: string): Promise<Folder['contents'] | false> =>
         ipcRenderer.invoke('get_course_files', course_id),
     download_file: async (file_name: string, download_url: string): Promise<void> =>
-        ipcRenderer.invoke('download_file', file_name, download_url)
+        ipcRenderer.invoke('download_file', file_name, download_url),
+    sync_folder: async (contents: Folder['contents'], path: string) =>
+        ipcRenderer.invoke('sync_folder', contents, path),
+    select_sync_folder: async (course_name: string): Promise<string | false> =>
+        ipcRenderer.invoke('select_sync_folder', course_name)
 }
 
 contextBridge.exposeInMainWorld('IPC', ipc)
