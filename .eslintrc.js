@@ -23,6 +23,14 @@ module.exports = {
                 ignoreArrowShorthand: true
             }
         ],
+        '@typescript-eslint/no-misused-promises': [
+            'error',
+            {
+                checksVoidReturn: {
+                    attributes: false
+                }
+            }
+        ],
         'no-empty': 'off'
     }
 }
