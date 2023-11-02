@@ -1,9 +1,11 @@
 import { join } from 'path'
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import { createWriteStream } from 'fs'
+import { stat, mkdir } from 'fs/promises'
 
 import { StudIPApi } from './api'
 import appIcon from '../../build/icon.png?asset'
+import { File, Folder } from './api/interfaces.ts'
 
 let g_api: StudIPApi
 let g_window: BrowserWindow
@@ -68,6 +70,74 @@ ipcMain.handle('download_file', async (_e, file_name: string, download_url: stri
     const data_stream = await g_api.get_file_contents(download_url)
     const write_stream = createWriteStream(file_path)
     data_stream.pipe(write_stream)
+    return new Promise((res) => {
+        write_stream.on('close', res)
+    })
+})
+
+async function sync_folder(folder: Folder, path: string) {
+    const full_path = join(path, folder.name)
+    // Make sure the folder exists
+    try {
+        await stat(full_path)
+    } catch (e) {
+        await mkdir(full_path, { recursive: true })
+    }
+
+    const promises: Promise<unknown>[] = []
+    for (const child_folder of folder.contents.folders) promises.push(sync_folder(child_folder, full_path))
+    for (const child_file of folder.contents.files) promises.push(sync_file(child_file, full_path))
+    return Promise.all(promises)
+}
+
+async function sync_file(file: File, path: string) {
+    const full_path = join(path, file.name)
+    let need_to_download = false
+
+    // Case 1: File doesn't exist
+    let stat_result
+    try {
+        stat_result = await stat(full_path)
+    } catch {
+        console.log(`Failed to stat ${full_path}, re-downloading`)
+        need_to_download = true
+    }
+
+    // Case 2: File isn't the same size (content changed in some way)
+    if (!need_to_download && stat_result) {
+        if (stat_result.size !== file.size) {
+            console.log(`Size of ${file.name} differs, ${stat_result.size} != ${file.size}`)
+            need_to_download = true
+        }
+    }
+
+    if (!need_to_download) return
+
+    return new Promise((res) => {
+        const write_stream = createWriteStream(full_path)
+        g_api.get_file_contents(file.download_url).then((data_stream) => {
+            data_stream.pipe(write_stream)
+            write_stream.on('close', res)
+        })
+    })
+}
+
+ipcMain.handle('sync_folder', async (_e, contents: Folder['contents'], path: string) => {
+    const promises: Promise<unknown>[] = []
+    await mkdir(path, { recursive: true })
+    for (const folder of contents.folders) promises.push(sync_folder(folder, path))
+    for (const file of contents.files) promises.push(sync_file(file, path))
+    await Promise.all(promises)
+})
+
+ipcMain.handle('select_sync_folder', async (_e, course_name: string): Promise<string | false> => {
+    const { filePaths: file_paths } = await dialog.showOpenDialog(g_window, {
+        properties: ['openDirectory'],
+        message: 'Choose folder to sync course files into',
+        defaultPath: course_name
+    })
+    const selected_file_path = file_paths.pop()
+    return selected_file_path ?? false
 })
 
 app.whenReady().then(createWindow)
