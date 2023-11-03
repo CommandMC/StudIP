@@ -41,16 +41,17 @@ interface CourseMetadata {
 interface FilesObjectBase {
     name: string
     id: string
-    date_modified: number
     author: User
 }
 interface File extends FilesObjectBase {
+    date_modified: number
     download_url: string
     download_count: number
     size: number
 }
 
 interface Folder extends FilesObjectBase {
+    date_created: number
     contents: { files: File[]; folders: Folder[] }
 }
 
