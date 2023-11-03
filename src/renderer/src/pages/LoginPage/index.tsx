@@ -17,10 +17,10 @@ function LoginPage() {
     const set_logged_in = useUserState((state) => state.set_logged_in)
 
     const login: FormEventHandler = (event) => {
-        const target = event.target as EventTarget & Record<'username' | 'password' | 'server', HTMLInputElement>
-        IPC.login(target.username.value, target.password.value, target.server.value).then((maybe_token) => {
-            if (maybe_token) {
-                window.localStorage.setItem('session_token', maybe_token)
+        const target = event.target as EventTarget & Record<'token' | 'server', HTMLInputElement>
+        IPC.login_with_token(target.token.value, target.server.value).then((login_success) => {
+            if (login_success) {
+                window.localStorage.setItem('session_token', target.token.value)
                 window.localStorage.setItem('session_server', target.server.value)
                 set_logged_in(true)
                 setSuccessfullyLoggedIn(true)
@@ -36,8 +36,7 @@ function LoginPage() {
             <form onSubmit={login}>
                 <Container>
                     <Stack spacing={2}>
-                        <TextField required label='Username' name='username' />
-                        <TextField required type='password' label='Password' name='password' />
+                        <TextField required type='password' label='Login Token' name='token' />
                         <Autocomplete
                             freeSolo
                             options={KNOWN_STUDIP_HOSTS}
