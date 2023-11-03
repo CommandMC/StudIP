@@ -321,7 +321,7 @@ class StudIPApi {
                     folders.push({
                         id: raw_folder.id,
                         name: raw_folder.name,
-                        date_modified: raw_folder.chdate,
+                        date_created: raw_folder.chdate,
                         author: {
                             username: folder_author_username,
                             full_name: raw_folder.author_name
