@@ -74,8 +74,8 @@ function FolderWidget({ folder, on_folder_click }: FolderWidgetProps) {
             </Box>
             {folder.contents.files.length} files, {folder.contents.folders.length} folders
             <Box flexGrow={1} />
-            <Box title={new Date(folder.date_modified * 1000).toString()}>
-                Modified: {fuzzy_date(folder.date_modified)}
+            <Box title={new Date(folder.date_created * 1000).toString()}>
+                Created: {fuzzy_date(folder.date_created)}
             </Box>
         </Stack>
     )
