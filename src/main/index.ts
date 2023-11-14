@@ -1,9 +1,10 @@
 import { join } from 'path'
-import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, nativeTheme } from 'electron'
 import { stat, mkdir, writeFile } from 'fs/promises'
 
 import { StudIPApi } from './api'
-import appIcon from '../../build/icon.png?asset'
+import appIconLight from '../../build/icon_light.png?asset'
+import appIconDark from '../../build/icon_dark.png?asset'
 import { File, Folder } from './api/interfaces.ts'
 
 let g_api: StudIPApi
@@ -13,7 +14,7 @@ function createWindow() {
     g_window = new BrowserWindow({
         width: 1280,
         height: 720,
-        icon: appIcon,
+        icon: nativeTheme.shouldUseDarkColors ? appIconDark : appIconLight,
         webPreferences: {
             preload: join(__dirname, '../preload/index.js')
         }
