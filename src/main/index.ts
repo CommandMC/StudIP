@@ -1,3 +1,4 @@
+import 'source-map-support/register'
 import { join } from 'path'
 import { app, BrowserWindow, ipcMain, dialog, nativeTheme } from 'electron'
 import { stat, mkdir, writeFile } from 'fs/promises'
