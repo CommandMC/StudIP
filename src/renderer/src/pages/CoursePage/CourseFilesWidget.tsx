@@ -91,13 +91,16 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
     )
     const [synchronized_folder, set_synchronized_folder] = useState<string | false | undefined>(undefined)
     const [is_synchronizing, set_is_synchronizing] = useState(false)
+    const [sync_once_files_are_ready, set_sync_once_files_are_ready] = useState(false)
 
+    // Automatically sync once the page is opened if a folder is configured
     useEffect(() => {
         const configured_sync_folder = window.localStorage.getItem(`${course_id}_file_sync`) ?? false
         set_synchronized_folder(configured_sync_folder)
-        if (configured_sync_folder) on_sync_button_click(configured_sync_folder)
+        if (configured_sync_folder) set_sync_once_files_are_ready(true)
     }, [])
 
+    // If `files` change, reset the selected folder stack
     useEffect(() => {
         if (files)
             set_selected_files_stack([
@@ -108,6 +111,7 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
             ])
     }, [files])
 
+    // When a folder is clicked, add a new entry to the stack
     const on_folder_click = useCallback(
         (label: string, files: Folder['contents']) => {
             set_selected_files_stack([...selected_files_stack, { label, files }])
@@ -115,10 +119,10 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
         [selected_files_stack]
     )
 
-    const on_file_click = useCallback(async (file: File) => {
-        return IPC.download_file(file.name, file.download_url)
-    }, [])
+    // When a file is clicked, download it
+    const on_file_click = useCallback(async (file: File) => IPC.download_file(file.name, file.download_url), [])
 
+    // When an item in the folder stack is clicked, navigate to it
     const on_history_click = useCallback(
         (index: number) => {
             const new_selected_files = [...selected_files_stack]
@@ -128,6 +132,7 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
         [selected_files_stack]
     )
 
+    // When the "Synchronize" button is clicked, prompt for a folder to sync with, store it, and sync to it
     const on_add_sync_button_click = useCallback(async () => {
         const current_course_obj = (useUserState.getState().courses || []).find((course) => course.id === course_id)
         if (!current_course_obj) return
@@ -135,18 +140,31 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
         if (!selected_folder) return
         window.localStorage.setItem(`${course_id}_file_sync`, selected_folder)
         set_synchronized_folder(selected_folder)
-        on_sync_button_click(selected_folder)
+        set_sync_once_files_are_ready(true)
     }, [])
 
-    const on_sync_button_click = useCallback((sync_folder: string) => {
-        if (!files) return
+    // When the "Sync" button is clicked, sync the current files into the configured folder
+    const on_sync_button_click = useCallback(() => {
+        if (!files || !synchronized_folder) return
         set_is_synchronizing(true)
-        IPC.sync_folder(files, sync_folder).then(() => set_is_synchronizing(false))
-    }, [])
+        IPC.sync_folder(files, synchronized_folder).then(() => set_is_synchronizing(false))
+    }, [files, synchronized_folder])
 
     const on_remove_sync_button_click = useCallback(() => {
         set_synchronized_folder(false)
     }, [])
+
+    // If `sync_once_files_are_ready` is true, files are fetched, and we have a sync folder configured,
+    // sync into the configured folder.
+    useEffect(() => {
+        if (sync_once_files_are_ready && files && synchronized_folder) {
+            set_is_synchronizing(true)
+            IPC.sync_folder(files, synchronized_folder).then(() => {
+                set_is_synchronizing(false)
+                set_sync_once_files_are_ready(false)
+            })
+        }
+    }, [sync_once_files_are_ready, files, synchronized_folder])
 
     if (files === false) return <Paper>Failed to fetch files</Paper>
     if (files === undefined) return <LoadingComponent />
@@ -209,11 +227,7 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
                                 Synchronizing to {synchronized_folder}
                             </Box>
                             <Box flexGrow={1} />
-                            <Button
-                                onClick={() => on_sync_button_click(synchronized_folder)}
-                                disabled={is_synchronizing}
-                                startIcon={<LoopIcon />}
-                            >
+                            <Button onClick={on_sync_button_click} disabled={is_synchronizing} startIcon={<LoopIcon />}>
                                 Sync now
                             </Button>
                             <Button
