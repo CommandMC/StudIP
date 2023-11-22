@@ -114,11 +114,13 @@ async function sync_file(file: File, path: string) {
 }
 
 ipcMain.handle('sync_folder', async (_e, contents: Folder['contents'], path: string) => {
+    console.log('Synchronizing to', path)
     const promises: Promise<unknown>[] = []
     await mkdir(path, { recursive: true })
     for (const folder of contents.folders) promises.push(sync_folder(folder, path))
     for (const file of contents.files) promises.push(sync_file(file, path))
     await Promise.all(promises)
+    console.log(`Sync of ${path} done`)
 })
 
 ipcMain.handle('select_sync_folder', async (_e, course_name: string): Promise<string | false> => {
