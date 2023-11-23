@@ -22,6 +22,8 @@ function LoginPage() {
             if (token_or_false) {
                 window.localStorage.setItem('session_token', token_or_false)
                 window.localStorage.setItem('session_server', target.server.value)
+                window.localStorage.setItem('last_username', target.username.value)
+                window.localStorage.setItem('last_server', target.server.value)
                 set_logged_in(true)
                 setSuccessfullyLoggedIn(true)
                 setTimeout(() => setSuccessfullyLoggedIn(false), 5000)
@@ -36,11 +38,17 @@ function LoginPage() {
             <form onSubmit={login}>
                 <Container>
                     <Stack spacing={2}>
-                        <TextField required label='Username' name='username' />
+                        <TextField
+                            required
+                            label='Username'
+                            name='username'
+                            defaultValue={window.localStorage.getItem('last_username')}
+                        />
                         <TextField required type='password' label='Password' name='password' />
                         <Autocomplete
                             freeSolo
                             options={KNOWN_STUDIP_HOSTS}
+                            defaultValue={window.localStorage.getItem('last_server')}
                             renderInput={(params) => <TextField {...params} label='Server' name='server' required />}
                         />
                         <LoadingButton loading={loggingIn} type='submit' variant='contained' color='success'>
