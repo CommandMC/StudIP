@@ -55,14 +55,19 @@ class StudIPApi {
         })
     }
 
-    private async _post(url: string, data: unknown, include_host = true): Promise<Response> {
+    private async _post(
+        url: string,
+        data: RequestInit['body'],
+        include_host = true,
+        headers: Record<string, string> | null = null
+    ): Promise<Response> {
         const full_url = include_host ? this.m_host + url : url
-        console.log('POST', full_url, data)
-        const headers = this.get_request_headers()
+        console.log('POST', full_url)
+        headers ??= this.get_request_headers()
         return fetch(full_url, {
             headers,
             method: 'POST',
-            body: JSON.stringify(data)
+            body: data
         })
     }
 
@@ -91,28 +96,23 @@ class StudIPApi {
         const response_text = await root_response.text()
         const security_token = response_text.match(SECURITY_TOKEN_REGEX)?.[1]
         const login_ticket = response_text.match(LOGIN_TICKET_REGEX)?.[1]
-        if (!security_token || !login_ticket) return false
+        const initial_cookie = root_response.headers.get('set-cookie')?.match(/Seminar_Session=(.*?);/)?.[1]
+        if (!security_token || !login_ticket || !initial_cookie) return false
 
-        const post_response = await this._post('index.php', {
+        const post_params = new URLSearchParams({
             security_token,
             login_ticket,
-            resolution: '1920x1080',
+            resolution: '',
             loginname: username,
             password,
             login: ''
         })
+        const post_response = await this._post('dispatch.php/my_courses', post_params, true, {
+            Cookie: `Seminar_Session=${initial_cookie}`
+        })
 
         const set_cookie_header = post_response.headers.get('set-cookie')
-        if (!set_cookie_header) return false
-        let login_token: string | null = null
-        for (const set_cookie_str of set_cookie_header) {
-            const maybe_token = set_cookie_str.match(/Seminar_Session=(.*?);/)?.[1]
-            if (maybe_token) {
-                login_token = maybe_token
-                break
-            }
-        }
-
+        const login_token = set_cookie_header?.match(/.*Seminar_Session=(.*?);/)?.[1]
         if (!login_token) return false
 
         this.m_token = login_token
