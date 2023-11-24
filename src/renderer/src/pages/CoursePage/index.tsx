@@ -13,7 +13,7 @@ import CommentIcon from '@mui/icons-material/Comment'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 
 import LoadingComponent from '../../components/LoadingComponent.tsx'
-import CourseFilesWidget from './CourseFilesWidget.tsx'
+import CourseFilesWidget from '../../components/CourseFilesWidget.tsx'
 import useCourseData from '../../helpers/useCourseData.ts'
 import type { CourseMetadata } from '../../../../main/api/interfaces.ts'
 
