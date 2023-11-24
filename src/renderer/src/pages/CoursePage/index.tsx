@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
@@ -13,9 +12,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import CommentIcon from '@mui/icons-material/Comment'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 
-import useUserState from '../../state.ts'
 import LoadingComponent from '../../components/LoadingComponent.tsx'
 import CourseFilesWidget from './CourseFilesWidget.tsx'
+import useCourseData from '../../helpers/useCourseData.ts'
 import type { CourseMetadata } from '../../../../main/api/interfaces.ts'
 
 interface AnnouncementCardProps {
@@ -98,20 +97,9 @@ function CoursePage() {
     const { course_id } = useParams()
     if (!course_id) return <></>
 
-    const course_info = useUserState((state) => state.course_metadata[course_id])
-    const course_files = useUserState((state) => state.course_files[course_id])
-
-    useEffect(() => {
-        if (course_info === undefined) useUserState.getState().fetch_course_metadata(course_id)
-    }, [course_info])
-
-    useEffect(() => {
-        if (course_info && course_info.supports.files && course_files === undefined)
-            useUserState.getState().fetch_course_files(course_id)
-    }, [course_info, course_files])
+    const { course_info, course_files } = useCourseData(course_id)
 
     if (course_info === undefined) return <LoadingComponent />
-
     if (course_info === false) return <>Failed to fetch Course Info</>
 
     return (
