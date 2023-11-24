@@ -13,10 +13,10 @@ import DownloadDoneIcon from '@mui/icons-material/DownloadDone'
 import LoopIcon from '@mui/icons-material/Loop'
 import DeleteIcon from '@mui/icons-material/Delete'
 
-import useUserState from '../../state.ts'
-import LoadingComponent from '../../components/LoadingComponent.tsx'
-import { fuzzy_date } from '../../helpers/fuzzy_date.ts'
-import type { File, Folder } from '../../../../main/api/interfaces.ts'
+import useUserState from '../state.ts'
+import LoadingComponent from '../components/LoadingComponent.tsx'
+import { fuzzy_date } from '../helpers/fuzzy_date.ts'
+import type { File, Folder } from '../../../main/api/interfaces.ts'
 
 function file_size(size_in_bytes: number): string {
     const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB']
