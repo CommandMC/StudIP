@@ -174,7 +174,7 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
     if (!currently_displayed_filelist) return <LoadingComponent />
 
     return (
-        <Paper>
+        <Paper sx={{ padding: 1 }}>
             <Stack spacing={2}>
                 <Stack direction='row'>
                     Currently selected:
