@@ -1,7 +1,8 @@
 import 'source-map-support/register'
 import { join } from 'path'
-import { app, BrowserWindow, ipcMain, dialog, nativeTheme } from 'electron'
-import { stat, mkdir, writeFile } from 'fs/promises'
+import { app, BrowserWindow, ipcMain, dialog, nativeTheme, safeStorage } from 'electron'
+import { createWriteStream, type Stats } from 'fs'
+import { stat, mkdir, writeFile, readFile } from 'fs/promises'
 
 import { StudIPApi } from './api'
 import appIconLight from '../../build/icon_light.png?asset'
@@ -72,14 +73,12 @@ ipcMain.handle('download_file', async (_e, file_name: string, download_url: stri
     await writeFile(file_path, Buffer.from(data))
 })
 
+const path_exists = async (path: string): Promise<Stats | false> => stat(path).catch(() => false)
+
 async function sync_folder(folder: Folder, path: string) {
     const full_path = join(path, folder.name)
-    // Make sure the folder exists
-    try {
-        await stat(full_path)
-    } catch (e) {
-        await mkdir(full_path, { recursive: true })
-    }
+    const exists = await path_exists(full_path)
+    if (!exists) await mkdir(full_path, { recursive: true })
 
     const promises: Promise<unknown>[] = []
     for (const child_folder of folder.contents.folders) promises.push(sync_folder(child_folder, full_path))
@@ -92,10 +91,8 @@ async function sync_file(file: File, path: string) {
     let need_to_download = false
 
     // Case 1: File doesn't exist
-    let stat_result
-    try {
-        stat_result = await stat(full_path)
-    } catch {
+    const stat_result = await path_exists(full_path)
+    if (!stat_result) {
         console.log(`Failed to stat ${full_path}, re-downloading`)
         need_to_download = true
     }
@@ -131,6 +128,23 @@ ipcMain.handle('select_sync_folder', async (_e, course_name: string): Promise<st
     })
     const selected_file_path = file_paths.pop()
     return selected_file_path ?? false
+})
+
+const encrypted_password_path = join(app.getPath('userData'), 'encrypted_pass.bin')
+
+ipcMain.handle('encrypt_password', (e, password: string) => {
+    const write_stream = createWriteStream(encrypted_password_path)
+    const encrypted_password = safeStorage.encryptString(password)
+    write_stream.write(encrypted_password)
+    write_stream.end()
+})
+
+ipcMain.handle('decrypt_password', async () => {
+    const password_file_exists = await path_exists(encrypted_password_path)
+    if (!password_file_exists) return false
+
+    const file_contents = await readFile(encrypted_password_path)
+    return safeStorage.decryptString(file_contents)
 })
 
 app.whenReady().then(createWindow)

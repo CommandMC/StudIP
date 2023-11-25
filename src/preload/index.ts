@@ -18,7 +18,9 @@ const ipc = {
     sync_folder: async (contents: Folder['contents'], path: string) =>
         ipcRenderer.invoke('sync_folder', contents, path),
     select_sync_folder: async (course_name: string): Promise<string | false> =>
-        ipcRenderer.invoke('select_sync_folder', course_name)
+        ipcRenderer.invoke('select_sync_folder', course_name),
+    encrypt_password: async (password: string): Promise<void> => ipcRenderer.invoke('encrypt_password', password),
+    decrypt_password: async (): Promise<string | false> => ipcRenderer.invoke('decrypt_password')
 }
 
 contextBridge.exposeInMainWorld('IPC', ipc)
