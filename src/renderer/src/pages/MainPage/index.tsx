@@ -36,7 +36,25 @@ function MainPage() {
                 } else {
                     window.localStorage.removeItem('session_token')
                     window.localStorage.removeItem('session_server')
-                    navigate('/login')
+
+                    // Try to automatically log in with stored credentials
+                    IPC.decrypt_password().then((password_or_false) => {
+                        const username = window.localStorage.getItem('last_username')
+                        const server = window.localStorage.getItem('last_server')
+                        if (!password_or_false || !username || !server) {
+                            navigate('/login')
+                            return
+                        }
+                        IPC.login(username, password_or_false, server).then((token_or_false) => {
+                            if (!token_or_false) {
+                                navigate('/login')
+                                return
+                            }
+                            window.localStorage.setItem('session_token', token_or_false)
+                            window.localStorage.setItem('session_server', server)
+                            set_logged_in(true)
+                        })
+                    })
                 }
                 setLoading(false)
             })
