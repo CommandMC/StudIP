@@ -120,6 +120,8 @@ class StudIPApi {
     }
 
     public async get_courses(): Promise<Course[] | false> {
+        await this._get('dispatch.php/my_courses/set_semester?sem_select=current')
+
         const courses_res = await this._get('dispatch.php/my_courses')
         const courses_text = await courses_res.text()
         const courses_json = courses_text.match(COURSES_DATA_REGEX)?.[1]
