@@ -1,5 +1,5 @@
 import { Course, MyCoursesResponse, RawFile, RawFolder } from './schemas.ts'
-import type { CourseMetadata, File, Folder } from './interfaces.ts'
+import type { CourseMetadata, File, Folder, Message, MessageDetails } from './interfaces.ts'
 
 const SECURITY_TOKEN_REGEX = /input type="hidden" name="security_token" value="(.*?)"/
 const LOGIN_TICKET_REGEX = /input type="hidden" name="login_ticket" value="(.*?)"/
@@ -20,6 +20,12 @@ const ANNOUNCEMENT_DESCRIPTION_REGEX = /formatted-content.*?>(.*?)<\/div/m
 const FILES_FILE_DATA_REGEX = /data-files="(\[.*])"/m
 const FILES_FOLDER_DATA_REGEX = /data-folders="(\[.*])"/m
 const FILE_AUTHOR_USERNAME_REGEX = /username=(.*)/
+const MESSAGES_ALL_REGEX = /(<tr id="message[\s\S]*?<\/tr>)/gm
+const MESSAGE_ID_REGEX = /<tr id="message_(.*?)"/
+const MESSAGE_TITLE_REGEX = /data-dialog>\s*(.*?)\s*<div/
+const MESSAGE_AUTHOR_DATE_REGEX = /username=(.*?)">\s*(.*?)\s*<\/a>[\s\S]*?<td>(.*?)<\/td>/
+const MESSAGE_DATE_REGEX = /(\d*).(\d*).(\d*) (\d*):(\d*)/
+const MESSAGE_DETAILS_REGEX = /An<\/strong>.*\n.*\n\s*(\d*)[\s\S]*?ck-content">([\s\S]*?)<\/div><\/div>/
 
 const WEEKDAY_TO_INDEX_MAP: Record<string, CourseMetadata['timeslots'][number]['day']> = {
     Montag: 0,
@@ -346,6 +352,62 @@ class StudIPApi {
 
     public async get_file_contents(download_url: string) {
         return this._get(download_url, false).then((res) => res.arrayBuffer())
+    }
+
+    public async get_messages(): Promise<Message[]> {
+        const message_res = await this._get('dispatch.php/messages/overview')
+        const messages_text = await message_res.text()
+        const message_matches = messages_text.matchAll(MESSAGES_ALL_REGEX)
+        const messages: Message[] = []
+        for (const message_match of message_matches) {
+            const message_full_text = message_match[1]
+            if (!message_full_text) continue
+            const message_id = message_full_text.match(MESSAGE_ID_REGEX)?.[1]
+            const message_title = message_full_text.match(MESSAGE_TITLE_REGEX)?.[1]
+            const [, message_author_username, message_author_full_name, message_date_str] =
+                message_full_text.match(MESSAGE_AUTHOR_DATE_REGEX) ?? []
+            if (
+                !message_id ||
+                !message_title ||
+                !message_author_username ||
+                !message_author_full_name ||
+                !message_date_str
+            )
+                continue
+
+            const [, message_date_day, message_date_month, message_date_year, message_date_hour, message_date_minute] =
+                message_date_str.match(MESSAGE_DATE_REGEX) ?? []
+            const message_date = new Date()
+            message_date.setFullYear(
+                Number(message_date_year),
+                Number(message_date_month) - 1,
+                Number(message_date_day)
+            )
+            message_date.setHours(Number(message_date_hour), Number(message_date_minute))
+            if (isNaN(message_date.valueOf())) continue
+
+            messages.push({
+                id: message_id,
+                title: message_title,
+                author: {
+                    username: message_author_username,
+                    full_name: message_author_full_name
+                },
+                send_time: message_date.valueOf()
+            })
+        }
+        return messages
+    }
+
+    public async get_message_details(message_id: string): Promise<MessageDetails | false> {
+        const message_res = await this._get(`dispatch.php/messages/read/${message_id}`)
+        const message_text = await message_res.text()
+        const [, message_recipients, message_content] = message_text.match(MESSAGE_DETAILS_REGEX) ?? []
+        if (!message_recipients || !message_content) return false
+        return {
+            recipients: Number(message_recipients),
+            content: message_content
+        }
     }
 }
 

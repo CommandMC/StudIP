@@ -55,4 +55,16 @@ interface Folder extends FilesObjectBase {
     contents: { files: File[]; folders: Folder[] }
 }
 
-export { CourseMetadata, File, Folder }
+interface Message {
+    id: string
+    title: string
+    author: User
+    send_time: number
+}
+
+interface MessageDetails {
+    content: string
+    recipients: number
+}
+
+export { CourseMetadata, File, Folder, Message, MessageDetails }

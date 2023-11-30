@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Course } from '../../main/api/schemas.ts'
-import type { CourseMetadata, Folder } from '../../main/api/interfaces.ts'
+import type { CourseMetadata, Folder, Message, MessageDetails } from '../../main/api/interfaces.ts'
 
 interface UserState {
     is_logged_in: boolean
@@ -12,6 +12,10 @@ interface UserState {
     fetch_course_metadata: (course_id: string) => Promise<void>
     course_files: Record<string, Folder['contents'] | false>
     fetch_course_files: (course_id: string) => Promise<void>
+    messages: Message[] | false | undefined
+    fetch_messages: () => Promise<void>
+    message_details: Record<string, MessageDetails | false>
+    fetch_message_details: (message_id: string) => Promise<void>
 }
 
 const useUserState = create<UserState>()(
@@ -42,6 +46,20 @@ const useUserState = create<UserState>()(
                 const course_files = await IPC.get_course_files(course_id)
                 set({
                     course_files: { ...get().course_files, [course_id]: course_files }
+                })
+            },
+
+            messages: undefined,
+            fetch_messages: async () => {
+                const messages = await IPC.get_messages()
+                set({ messages })
+            },
+
+            message_details: {},
+            fetch_message_details: async (message_id) => {
+                const message_details = await IPC.get_message_details(message_id)
+                set({
+                    message_details: { ...get().message_details, [message_id]: message_details }
                 })
             }
         }),
