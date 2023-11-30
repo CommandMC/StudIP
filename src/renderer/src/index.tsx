@@ -13,6 +13,8 @@ import LoginPage from './pages/LoginPage'
 import CoursePage from './pages/CoursePage'
 import ForumPage from './pages/ForumPage'
 import CourseFilesPage from './pages/CourseFilesPage'
+import MessagesPage from './pages/MessagesPage'
+import MessagePage from './pages/MessagePage'
 
 const router = createHashRouter([
     {
@@ -38,6 +40,14 @@ const router = createHashRouter([
             {
                 path: 'course/:course_id/files',
                 element: <CourseFilesPage />
+            },
+            {
+                path: 'messages',
+                element: <MessagesPage />
+            },
+            {
+                path: 'message/:message_id',
+                element: <MessagePage />
             }
         ]
     }

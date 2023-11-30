@@ -147,4 +147,14 @@ ipcMain.handle('decrypt_password', async () => {
     return safeStorage.decryptString(file_contents)
 })
 
+ipcMain.handle('get_messages', async () => {
+    console.log('Fetching messages')
+    return g_api.get_messages()
+})
+
+ipcMain.handle('get_message_details', async (e, message_id: string) => {
+    console.log(`Fetching message details for ${message_id}`)
+    return g_api.get_message_details(message_id)
+})
+
 app.whenReady().then(createWindow)
