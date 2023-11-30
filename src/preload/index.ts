@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { contextBridge, ipcRenderer } from 'electron'
 import type { Course } from '../main/api/schemas.ts'
-import type { CourseMetadata, Folder } from '../main/api/interfaces.ts'
+import type { CourseMetadata, Folder, Message, MessageDetails } from '../main/api/interfaces.ts'
 
 const ipc = {
     login: async (username: string, password: string, server: string): Promise<string | false> =>
@@ -20,7 +20,10 @@ const ipc = {
     select_sync_folder: async (course_name: string): Promise<string | false> =>
         ipcRenderer.invoke('select_sync_folder', course_name),
     encrypt_password: async (password: string): Promise<void> => ipcRenderer.invoke('encrypt_password', password),
-    decrypt_password: async (): Promise<string | false> => ipcRenderer.invoke('decrypt_password')
+    decrypt_password: async (): Promise<string | false> => ipcRenderer.invoke('decrypt_password'),
+    get_messages: async (): Promise<Message[] | false> => ipcRenderer.invoke('get_messages'),
+    get_message_details: async (message_id: string): Promise<MessageDetails> =>
+        ipcRenderer.invoke('get_message_details', message_id)
 }
 
 contextBridge.exposeInMainWorld('IPC', ipc)

@@ -9,6 +9,7 @@ import Box from '@mui/material/Box'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import CssBaseline from '@mui/material/CssBaseline'
+import ButtonGroup from '@mui/material/ButtonGroup'
 
 import AccountCircle from '@mui/icons-material/AccountCircle'
 
@@ -78,15 +79,26 @@ function MainPage() {
             <AppBar position='sticky' sx={{ marginBottom: 3 }}>
                 <Toolbar>
                     {is_logged_in && (
-                        <Button
-                            variant='contained'
-                            color='success'
-                            onClick={() => {
-                                navigate('/courses')
-                            }}
-                        >
-                            Courses
-                        </Button>
+                        <ButtonGroup>
+                            <Button
+                                variant='contained'
+                                color='success'
+                                onClick={() => {
+                                    navigate('/courses')
+                                }}
+                            >
+                                Courses
+                            </Button>
+                            <Button
+                                variant='contained'
+                                color='success'
+                                onClick={() => {
+                                    navigate('/messages')
+                                }}
+                            >
+                                Messages
+                            </Button>
+                        </ButtonGroup>
                     )}
                     <Box sx={{ flexGrow: 1 }} />
                     <IconButton
