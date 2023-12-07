@@ -120,7 +120,18 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
     )
 
     // When a file is clicked, download it
-    const on_file_click = useCallback(async (file: File) => IPC.download_file(file.name, file.download_url), [])
+    const on_file_click = useCallback(
+        async (file: File) => {
+            if (synchronized_folder && files)
+                return IPC.open_file(
+                    synchronized_folder,
+                    selected_files_stack.toSpliced(0, 1).map(({ label }) => label),
+                    file
+                )
+            return IPC.download_file(file.name, file.download_url)
+        },
+        [synchronized_folder, files, selected_files_stack]
+    )
 
     // When an item in the folder stack is clicked, navigate to it
     const on_history_click = useCallback(
