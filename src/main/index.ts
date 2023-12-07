@@ -1,6 +1,6 @@
 import 'source-map-support/register'
 import { join } from 'path'
-import { app, BrowserWindow, ipcMain, dialog, nativeTheme, safeStorage } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, nativeTheme, safeStorage, shell } from 'electron'
 import { createWriteStream, type Stats } from 'fs'
 import { stat, mkdir, writeFile, readFile } from 'fs/promises'
 
@@ -155,6 +155,11 @@ ipcMain.handle('get_messages', async () => {
 ipcMain.handle('get_message_details', async (e, message_id: string) => {
     console.log(`Fetching message details for ${message_id}`)
     return g_api.get_message_details(message_id)
+})
+
+ipcMain.handle('open_file', async (_e, sync_path: string, relative_folder_path: string[], file_to_open: File) => {
+    const full_path = join(sync_path, ...relative_folder_path, file_to_open.name)
+    return shell.openPath(full_path)
 })
 
 app.whenReady().then(createWindow)
