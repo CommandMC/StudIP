@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { contextBridge, ipcRenderer } from 'electron'
 import type { Course } from '../main/api/schemas.ts'
-import type { CourseMetadata, Folder, Message, MessageDetails } from '../main/api/interfaces.ts'
+import type { CourseMetadata, File, Folder, Message, MessageDetails } from '../main/api/interfaces.ts'
 
 const ipc = {
     login: async (username: string, password: string, server: string): Promise<string | false> =>
@@ -15,6 +15,8 @@ const ipc = {
         ipcRenderer.invoke('get_course_files', course_id),
     download_file: async (file_name: string, download_url: string): Promise<void> =>
         ipcRenderer.invoke('download_file', file_name, download_url),
+    open_file: async (sync_path: string, relative_folder_path: string[], file_to_open: File): Promise<void> =>
+        ipcRenderer.invoke('open_file', sync_path, relative_folder_path, file_to_open),
     sync_folder: async (contents: Folder['contents'], path: string) =>
         ipcRenderer.invoke('sync_folder', contents, path),
     select_sync_folder: async (course_name: string): Promise<string | false> =>
