@@ -27,21 +27,21 @@ function MainPage() {
     // Log in with session token if one's stored
     useEffect(() => {
         if (is_logged_in) return
-        const session_token = window.localStorage.getItem('session_token')
-        const session_host = window.localStorage.getItem('session_server')
+        const session_token = localStorage.getItem('session_token')
+        const session_host = localStorage.getItem('session_server')
         if (session_token && session_host) {
             setLoading(true)
             IPC.login_with_token(session_token, session_host).then((success) => {
                 if (success) {
                     set_logged_in(true)
                 } else {
-                    window.localStorage.removeItem('session_token')
-                    window.localStorage.removeItem('session_server')
+                    localStorage.removeItem('session_token')
+                    localStorage.removeItem('session_server')
 
                     // Try to automatically log in with stored credentials
                     IPC.decrypt_password().then((password_or_false) => {
-                        const username = window.localStorage.getItem('last_username')
-                        const server = window.localStorage.getItem('last_server')
+                        const username = localStorage.getItem('last_username')
+                        const server = localStorage.getItem('last_server')
                         if (!password_or_false || !username || !server) {
                             navigate('/login')
                             return
@@ -51,8 +51,8 @@ function MainPage() {
                                 navigate('/login')
                                 return
                             }
-                            window.localStorage.setItem('session_token', token_or_false)
-                            window.localStorage.setItem('session_server', server)
+                            localStorage.setItem('session_token', token_or_false)
+                            localStorage.setItem('session_server', server)
                             set_logged_in(true)
                         })
                     })

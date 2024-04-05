@@ -63,7 +63,7 @@ const useUserState = create<UserState>()(
                 })
             }
         }),
-        { name: 'user-store', storage: createJSONStorage(() => window.sessionStorage) }
+        { name: 'user-store', storage: createJSONStorage(() => sessionStorage) }
     )
 )
 
