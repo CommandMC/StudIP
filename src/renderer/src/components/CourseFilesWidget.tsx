@@ -95,7 +95,7 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
 
     // Automatically sync once the page is opened if a folder is configured
     useEffect(() => {
-        const configured_sync_folder = window.localStorage.getItem(`${course_id}_file_sync`) ?? false
+        const configured_sync_folder = localStorage.getItem(`${course_id}_file_sync`) ?? false
         set_synchronized_folder(configured_sync_folder)
         if (configured_sync_folder) set_sync_once_files_are_ready(true)
     }, [])
@@ -149,7 +149,7 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
         if (!current_course_obj) return
         const selected_folder = await IPC.select_sync_folder(current_course_obj.name)
         if (!selected_folder) return
-        window.localStorage.setItem(`${course_id}_file_sync`, selected_folder)
+        localStorage.setItem(`${course_id}_file_sync`, selected_folder)
         set_synchronized_folder(selected_folder)
         set_sync_once_files_are_ready(true)
     }, [])

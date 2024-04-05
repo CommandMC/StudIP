@@ -22,10 +22,10 @@ function LoginPage() {
         const target = event.target as EventTarget & Record<'username' | 'password' | 'server', HTMLInputElement>
         IPC.login(target.username.value, target.password.value, target.server.value).then((token_or_false) => {
             if (token_or_false) {
-                window.localStorage.setItem('session_token', token_or_false)
-                window.localStorage.setItem('session_server', target.server.value)
-                window.localStorage.setItem('last_username', target.username.value)
-                window.localStorage.setItem('last_server', target.server.value)
+                localStorage.setItem('session_token', token_or_false)
+                localStorage.setItem('session_server', target.server.value)
+                localStorage.setItem('last_username', target.username.value)
+                localStorage.setItem('last_server', target.server.value)
                 if (store_password) IPC.encrypt_password(target.password.value)
                 set_logged_in(true)
                 setSuccessfullyLoggedIn(true)
@@ -45,13 +45,13 @@ function LoginPage() {
                             required
                             label='Username'
                             name='username'
-                            defaultValue={window.localStorage.getItem('last_username')}
+                            defaultValue={localStorage.getItem('last_username')}
                         />
                         <TextField required type='password' label='Password' name='password' />
                         <Autocomplete
                             freeSolo
                             options={KNOWN_STUDIP_HOSTS}
-                            defaultValue={window.localStorage.getItem('last_server')}
+                            defaultValue={localStorage.getItem('last_server')}
                             renderInput={(params) => <TextField {...params} label='Server' name='server' required />}
                         />
                         <FormGroup>
