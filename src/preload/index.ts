@@ -25,7 +25,8 @@ const ipc = {
     decrypt_password: async (): Promise<string | false> => ipcRenderer.invoke('decrypt_password'),
     get_messages: async (): Promise<Message[] | false> => ipcRenderer.invoke('get_messages'),
     get_message_details: async (message_id: string): Promise<MessageDetails> =>
-        ipcRenderer.invoke('get_message_details', message_id)
+        ipcRenderer.invoke('get_message_details', message_id),
+    ready: async (): Promise<void> => ipcRenderer.invoke('ready')
 }
 
 contextBridge.exposeInMainWorld('IPC', ipc)
