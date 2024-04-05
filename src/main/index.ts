@@ -19,7 +19,8 @@ function createWindow() {
         icon: nativeTheme.shouldUseDarkColors ? appIconDark : appIconLight,
         webPreferences: {
             preload: join(__dirname, '../preload/index.js')
-        }
+        },
+        show: false
     })
 
     const renderer_url = process.env['ELECTRON_RENDERER_URL']
@@ -161,5 +162,7 @@ ipcMain.handle('open_file', async (_e, sync_path: string, relative_folder_path: 
     const full_path = join(sync_path, ...relative_folder_path, file_to_open.name)
     return shell.openPath(full_path)
 })
+
+ipcMain.handle('ready', () => g_window.show())
 
 app.whenReady().then(createWindow)
