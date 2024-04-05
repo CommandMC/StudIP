@@ -73,6 +73,11 @@ function MainPage() {
         })
     }, [prefersDarkMode])
 
+    // Send signal to Backend to let it know we're done loading
+    useEffect(() => {
+        IPC.ready()
+    }, [])
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
