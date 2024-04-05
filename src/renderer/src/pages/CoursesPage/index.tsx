@@ -63,7 +63,7 @@ function getOnClickLink(icon_shape: string, course: Course): string {
 }
 
 function buildNavigationButton(nav: Course['navigation'][number], course: Course, index: number) {
-    const key = `${course.id + index}`
+    const key = `${course.id}_${index}`
 
     if (nav === false) return <Box key={key} sx={{ width: 24, height: 24 }} />
 
