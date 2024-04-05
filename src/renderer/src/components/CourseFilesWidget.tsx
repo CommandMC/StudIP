@@ -19,14 +19,16 @@ import { fuzzy_date } from '../helpers/fuzzy_date.ts'
 import type { File, Folder } from '../../../main/api/interfaces.ts'
 
 function file_size(size_in_bytes: number): string {
-    const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB']
+    const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'] as const
     let temp_size = size_in_bytes
     let unit_index = 0
     while (temp_size / 1024 > 1) {
         temp_size /= 1024
         unit_index++
     }
-    return `${temp_size.toFixed(2)} ${units[unit_index]}`
+    const unit_name = units[unit_index]
+    if (!unit_name) return 'Very large'
+    return `${temp_size.toFixed(2)} ${unit_name}`
 }
 
 interface FileWidgetProps {
