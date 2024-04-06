@@ -26,7 +26,7 @@ function MainPage() {
 
     // Log in with session token if one's stored
     useEffect(() => {
-        if (is_logged_in) return
+        if (is_logged_in !== undefined) return
         const session_token = localStorage.getItem('session_token')
         const session_host = localStorage.getItem('session_server')
         if (session_token && session_host) {
@@ -60,7 +60,7 @@ function MainPage() {
                 setLoading(false)
             })
         }
-    }, [])
+    }, [is_logged_in])
 
     // Switch between light/dark theme depending on user preference
     // TODO: Make this configurable
@@ -83,7 +83,7 @@ function MainPage() {
             <CssBaseline />
             <AppBar position='sticky' sx={{ marginBottom: 3 }}>
                 <Toolbar>
-                    {is_logged_in && (
+                    {is_logged_in !== false && (
                         <ButtonGroup>
                             <Button
                                 variant='contained'
