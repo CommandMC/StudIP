@@ -28,7 +28,6 @@ module.exports = tseslint.config(
                     }
                 }
             ],
-            '@typescript-eslint/no-non-null-assertion': 'off',
             '@typescript-eslint/restrict-template-expressions': [
                 'error',
                 {
