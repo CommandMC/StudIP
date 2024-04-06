@@ -1,13 +1,20 @@
 appId: de.commandmc.studip
+productName: StudIP
+icon: build/icon_dark.icns
 directories:
     buildResources: build
 files:
     - '!.idea'
+    - '!.pre-commit-config.yaml'
+    - '!.prettierignore'
+    - '!.prettierrc'
+    - '!meta'
     - '!src'
     - '!electron.vite.config.ts'
+    - '!eslint.config.js'
+    - '!pnpm-lock.yaml'
     - '!tsconfig.json'
 linux:
     category: Education
     target:
-        - AppImage
         - pacman
