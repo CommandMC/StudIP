@@ -1,53 +1,53 @@
 import { createRoot } from 'react-dom/client'
 import { createHashRouter, RouterProvider } from 'react-router-dom'
 
+import type { ComponentType } from 'react'
+
 import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import './index.css'
 
-import MainPage from './pages/MainPage'
-import CoursesPage from './pages/CoursesPage'
-import LoginPage from './pages/LoginPage'
-import CoursePage from './pages/CoursePage'
-import ForumPage from './pages/ForumPage'
-import CourseFilesPage from './pages/CourseFilesPage'
-import MessagesPage from './pages/MessagesPage'
-import MessagePage from './pages/MessagePage'
+function makeLazyFunc(importedFile: Promise<Record<'default', ComponentType>>) {
+    return async () => {
+        const component = await importedFile
+        return { Component: component.default }
+    }
+}
 
 const router = createHashRouter([
     {
         path: '/',
-        element: <MainPage />,
+        lazy: makeLazyFunc(import('./pages/MainPage')),
         children: [
             {
                 path: 'courses',
-                element: <CoursesPage />
+                lazy: makeLazyFunc(import('./pages/CoursesPage'))
             },
             {
                 path: 'login',
-                element: <LoginPage />
+                lazy: makeLazyFunc(import('./pages/LoginPage'))
             },
             {
                 path: 'course/:course_id',
-                element: <CoursePage />
+                lazy: makeLazyFunc(import('./pages/CoursePage'))
             },
             {
                 path: 'course/:course_id/forum',
-                element: <ForumPage />
+                lazy: makeLazyFunc(import('./pages/ForumPage'))
             },
             {
                 path: 'course/:course_id/files',
-                element: <CourseFilesPage />
+                lazy: makeLazyFunc(import('./pages/CourseFilesPage'))
             },
             {
                 path: 'messages',
-                element: <MessagesPage />
+                lazy: makeLazyFunc(import('./pages/MessagesPage'))
             },
             {
                 path: 'message/:message_id',
-                element: <MessagePage />
+                lazy: makeLazyFunc(import('./pages/MessagePage'))
             }
         ]
     }
