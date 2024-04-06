@@ -53,5 +53,7 @@ const router = createHashRouter([
     }
 ])
 
-const root = createRoot(document.getElementById('root')!)
+const rootElement = document.getElementById('root')
+if (!rootElement) throw new Error('Missing element with id "root" in HTML')
+const root = createRoot(rootElement)
 root.render(<RouterProvider router={router} />)
