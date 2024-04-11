@@ -93,13 +93,11 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
     )
     const [synchronized_folder, set_synchronized_folder] = useState<string | false | undefined>(undefined)
     const [is_synchronizing, set_is_synchronizing] = useState(false)
-    const [sync_once_files_are_ready, set_sync_once_files_are_ready] = useState(false)
 
     // Automatically sync once the page is opened if a folder is configured
     useEffect(() => {
         const configured_sync_folder = localStorage.getItem(`${course_id}_file_sync`) ?? false
         set_synchronized_folder(configured_sync_folder)
-        if (configured_sync_folder) set_sync_once_files_are_ready(true)
     }, [])
 
     // If `files` change, reset the selected folder stack
@@ -153,7 +151,6 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
         if (!selected_folder) return
         localStorage.setItem(`${course_id}_file_sync`, selected_folder)
         set_synchronized_folder(selected_folder)
-        set_sync_once_files_are_ready(true)
     }, [])
 
     // When the "Sync" button is clicked, sync the current files into the configured folder
@@ -170,14 +167,12 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
     // If `sync_once_files_are_ready` is true, files are fetched, and we have a sync folder configured,
     // sync into the configured folder.
     useEffect(() => {
-        if (sync_once_files_are_ready && files && synchronized_folder) {
-            set_is_synchronizing(true)
-            IPC.sync_folder(files, synchronized_folder).then(() => {
-                set_is_synchronizing(false)
-                set_sync_once_files_are_ready(false)
-            })
-        }
-    }, [sync_once_files_are_ready, files, synchronized_folder])
+        if (!files || !synchronized_folder) return
+        set_is_synchronizing(true)
+        IPC.sync_folder(files, synchronized_folder).then(() => {
+            set_is_synchronizing(false)
+        })
+    }, [files, synchronized_folder])
 
     if (files === false) return <Paper>Failed to fetch files</Paper>
     if (files === undefined) return <LoadingComponent />
