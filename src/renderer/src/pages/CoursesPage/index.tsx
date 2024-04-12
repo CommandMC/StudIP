@@ -39,29 +39,11 @@ function getOnClickLink(icon_shape: string, course: Course): string {
     switch (icon_shape) {
         case 'news':
             return `/course/${course.id}`
-        case 'forum':
-            return `/course/${course.id}/forum`
-        case 'persons':
-            return `/course/${course.id}/members`
         case 'files':
             return `/course/${course.id}/files`
-        case 'schedule':
-            return `/course/${course.id}/schedule`
-        case 'vote':
-            return `/course/${course.id}/forms`
-        case 'vips':
-            return `/course/${course.id}/vips`
-        case 'meetings':
-            return `/course/${course.id}/meetings`
-        case 'courseware':
-            return `/course/${course.id}/courseware`
-        case 'wiki':
-            return `/course/${course.id}/wiki`
-        case 'opencast':
-            return `/course/${course.id}/opencast`
+        default:
+            return ''
     }
-    console.warn('Unknown link', icon_shape, 'for course', course)
-    return ''
 }
 
 function buildNavigationButton(nav: Course['navigation'][number], course: Course, index: number) {
@@ -136,9 +118,13 @@ function buildNavigationButton(nav: Course['navigation'][number], course: Course
             }}
             title={nav.attr.title}
         >
-            <Link to={link} style={{ textDecoration: 'none' }}>
-                {innerIcon}
-            </Link>
+            {link ? (
+                <Link to={link} style={{ textDecoration: 'none' }}>
+                    {innerIcon}
+                </Link>
+            ) : (
+                innerIcon
+            )}
         </Paper>
     )
 }
