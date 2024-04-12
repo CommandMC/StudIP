@@ -15,11 +15,20 @@ const CourseNavigation = z.union([
     })
 ])
 
+const CourseExtraNavigation = z.union([
+    z.literal(false),
+    z.object({
+        url: z.string(),
+        icon: z.string(),
+        label: z.string()
+    })
+])
+
 const CourseBase = z.object({
     admission_binding: z.boolean(),
     avatar: z.string(),
     children: z.array(z.unknown()),
-    extra_navigation: z.boolean(),
+    extra_navigation: CourseExtraNavigation,
     format: z.string(),
     group: z.number().int(),
     id: z.string(),
