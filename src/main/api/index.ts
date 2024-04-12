@@ -3,7 +3,7 @@ import type { CourseMetadata, File, Folder, Message, MessageDetails } from './in
 
 const SECURITY_TOKEN_REGEX = /input type="hidden" name="security_token" value="(.*?)"/
 const LOGIN_TICKET_REGEX = /input type="hidden" name="login_ticket" value="(.*?)"/
-const COURSES_DATA_REGEX = /window.STUDIP.MyCoursesData = (.*?);/m
+const COURSES_DATA_REGEX = /window\.STUDIP\.MyCoursesData = ([\w\W]*?);/m
 const COURSE_TITLE_REGEX = /<div id="context-title">\s*<img .*?>\s*(.*)/m
 const COURSE_TIMESLOTS_REGEX = /<dt>Zeit \/ Veranstaltungsort<\/dt>\s*<dd>\s*(.*?)\s*<\/dd>/m
 const COURSE_FILES_SUPPORTED_REGEX = /dispatch.php\/course\/files/m
@@ -130,15 +130,14 @@ class StudIPApi {
 
         const courses_res = await this._get('dispatch.php/my_courses')
         const courses_text = await courses_res.text()
-        const courses_json = courses_text.match(COURSES_DATA_REGEX)?.[1]
+        const courses_json = courses_text.match(COURSES_DATA_REGEX)?.[1]?.replaceAll('\n', '')
         if (!courses_json) return false
-        try {
-            const courses_response_parsed = MyCoursesResponse.parse(JSON.parse(courses_json))
-            return Object.values(courses_response_parsed.courses)
-        } catch (e) {
-            console.log(e)
+        const courses_response_parsed = MyCoursesResponse.safeParse(JSON.parse(courses_json))
+        if (!courses_response_parsed.success) {
+            console.error(courses_response_parsed.error.format())
             return false
         }
+        return Object.values(courses_response_parsed.data.courses)
     }
 
     public async get_course(course_id: string): Promise<CourseMetadata | false> {
