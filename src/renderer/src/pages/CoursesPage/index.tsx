@@ -17,6 +17,8 @@ import PhotoCamera from '@mui/icons-material/PhotoCamera'
 import OndemandVideo from '@mui/icons-material/OndemandVideo'
 import TaskAlt from '@mui/icons-material/TaskAlt'
 import Article from '@mui/icons-material/Article'
+import LiveTv from '@mui/icons-material/LiveTv'
+import LinkIcon from '@mui/icons-material/Link'
 import LoadingComponent from '../../components/LoadingComponent.tsx'
 import useUserState from '../../state.ts'
 
@@ -107,6 +109,12 @@ function buildNavigationButton(nav: Course['navigation'][number], course: Course
         case 'courseware':
         case 'wiki':
             innerIcon = <Article />
+            break
+        case 'video2':
+            innerIcon = <LiveTv />
+            break
+        case 'link-extern':
+            innerIcon = <LinkIcon />
             break
     }
 
