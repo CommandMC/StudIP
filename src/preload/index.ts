@@ -17,6 +17,7 @@ const ipc = {
         ipcRenderer.invoke('download_file', file_name, download_url),
     open_file: async (sync_path: string, relative_folder_path: string[], file_to_open: File): Promise<void> =>
         ipcRenderer.invoke('open_file', sync_path, relative_folder_path, file_to_open),
+    open_path: async (path: string): Promise<void> => ipcRenderer.invoke('open_path', path),
     sync_folder: async (contents: Folder['contents'], path: string) =>
         ipcRenderer.invoke('sync_folder', contents, path),
     select_sync_folder: async (course_name: string): Promise<string | false> =>
