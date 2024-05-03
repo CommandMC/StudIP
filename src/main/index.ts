@@ -163,6 +163,8 @@ ipcMain.handle('open_file', async (_e, sync_path: string, relative_folder_path: 
     return shell.openPath(full_path)
 })
 
+ipcMain.handle('open_path', async (_e, path: string) => shell.openPath(path))
+
 ipcMain.handle('ready', () => g_window.show())
 
 app.whenReady().then(createWindow)

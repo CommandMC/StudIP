@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Paper from '@mui/material/Paper'
 import Button from '@mui/material/Button'
+import MuiLink from '@mui/material/Link'
 
 import FolderIcon from '@mui/icons-material/Folder'
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile'
@@ -232,7 +233,10 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
                                 }}
                             >
                                 {is_synchronizing ? <DownloadingIcon /> : <DownloadDoneIcon />}
-                                Synchronizing to {synchronized_folder}
+                                Synchronizing to&nbsp;
+                                <MuiLink sx={{ cursor: 'pointer' }} onClick={() => IPC.open_path(synchronized_folder)}>
+                                    {synchronized_folder}
+                                </MuiLink>
                             </Box>
                             <Box flexGrow={1} />
                             <Button onClick={on_sync_button_click} disabled={is_synchronizing} startIcon={<LoopIcon />}>
