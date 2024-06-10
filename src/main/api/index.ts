@@ -5,7 +5,7 @@ const SECURITY_TOKEN_REGEX = /input type="hidden" name="security_token" value="(
 const LOGIN_TICKET_REGEX = /input type="hidden" name="login_ticket" value="(.*?)"/
 const COURSES_DATA_REGEX = /window\.STUDIP\.MyCoursesData = ([\w\W]*?);/m
 const COURSE_TITLE_REGEX = /<div id="context-title">\s*<img .*?>\s*(.*)/m
-const COURSE_TIMESLOTS_REGEX = /<dt>Zeit \/ Veranstaltungsort<\/dt>\s*<dd>\s*(.*?)\s*<\/dd>/m
+const COURSE_TIMESLOTS_REGEX = /<dt>Zeit \/ Veranstaltungsort<\/dt>\s*<dd>\s*([\s\S]*?)\s*<\/dd>/m
 const COURSE_FILES_SUPPORTED_REGEX = /dispatch.php\/course\/files/m
 const TIMESLOT_DATA_REGEX = /(.*?): (\d*?):(\d*?) - (\d*?):(\d*?),.*<em>(.*?)<\/em>/m
 const TIMESLOT_LOCATIONS_REGEX = /.*?index\/(.*?)\?.*?">(.*?)</g
@@ -148,7 +148,7 @@ class StudIPApi {
         if (!course_title) return false
         course_title = course_title.split(' ').filter(Boolean).join(' ')
 
-        const timeslots_match = course_text.match(COURSE_TIMESLOTS_REGEX)?.[1]
+        const timeslots_match = course_text.match(COURSE_TIMESLOTS_REGEX)?.[1]?.replaceAll('\n', '')
         if (!timeslots_match) return false
 
         const timeslots: CourseMetadata['timeslots'] = []
