@@ -37,6 +37,10 @@ const WEEKDAY_TO_INDEX_MAP: Record<string, CourseMetadata['timeslots'][number]['
     Sonntag: 6
 }
 
+function replaceHtmlEscapedCharacters(src?: string) {
+    return src?.replaceAll('&quot;', '"').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&')
+}
+
 class StudIPApi {
     private m_token: string | null
     private readonly m_host: string
@@ -213,7 +217,7 @@ class StudIPApi {
         for (const match of announcements_matches) {
             const content = match[1]
             if (!content) continue
-            const title = content.match(ANNOUNCEMENT_TITLE_REGEX)?.[1]?.replaceAll('&quot;', '"')
+            const title = replaceHtmlEscapedCharacters(content.match(ANNOUNCEMENT_TITLE_REGEX)?.[1])
             const [, author_username, author_full_name] = content.match(ANNOUNCEMENT_AUTHOR_REGEX) ?? []
             const [, published_day, published_month, published_year] = content.match(ANNOUNCEMENT_DATE_REGEX) ?? []
             const visits_str = content.match(ANNOUNCEMENT_VISITS_REGEX)?.[1]
@@ -273,21 +277,10 @@ class StudIPApi {
     private async fetch_folder_contents(folder_id: string, course_id: string): Promise<false | Folder['contents']> {
         const files_response = await this._get(`dispatch.php/course/files/index/${folder_id}?cid=${course_id}`)
         const files_text = await files_response.text()
-        let files_data = files_text.match(FILES_FILE_DATA_REGEX)?.[1]
-        let folder_data = files_text.match(FILES_FOLDER_DATA_REGEX)?.[1]
+        const files_data = replaceHtmlEscapedCharacters(files_text.match(FILES_FILE_DATA_REGEX)?.[1])
+        const folder_data = replaceHtmlEscapedCharacters(files_text.match(FILES_FOLDER_DATA_REGEX)?.[1])
 
         if (!files_data || !folder_data) return false
-
-        files_data = files_data
-            .replaceAll('&quot;', '"')
-            .replaceAll('&lt;', '<')
-            .replaceAll('&gt;', '>')
-            .replaceAll('&amp;', '&')
-        folder_data = folder_data
-            .replaceAll('&quot;', '"')
-            .replaceAll('&lt;', '<')
-            .replaceAll('&gt;', '>')
-            .replaceAll('&amp;', '&')
 
         const files: File[] = []
         let raw_files: RawFile[] = []
