@@ -26,15 +26,6 @@ interface CourseWidgetProps {
     course: Course
 }
 
-const COURSE_NOTE_REGEX = /<abbr title="\s*(.*?)\s*">\s*(.*?)\s*<\/abbr/m
-function findCourseNote(format: string): [string, string] | [null, null] {
-    const match_result = format.match(COURSE_NOTE_REGEX)
-    const note_title = match_result?.[1]
-    const note = match_result?.[2]
-    if (note_title && note) return [note_title, note]
-    return [null, null]
-}
-
 function getOnClickLink(icon_shape: string, course: Course): string {
     switch (icon_shape) {
         case 'news':
@@ -130,8 +121,6 @@ function buildNavigationButton(nav: Course['navigation'][number], course: Course
 }
 
 const CourseWidget = React.memo(({ course }: CourseWidgetProps) => {
-    const [note_title, note] = findCourseNote(course.format)
-
     return (
         <Card>
             <Stack direction='row' spacing={1}>
@@ -140,11 +129,6 @@ const CourseWidget = React.memo(({ course }: CourseWidgetProps) => {
                     <Link to={`/course/${course.id}`} style={{ textDecoration: 'none' }}>
                         {course.name}
                     </Link>
-                    {note && (
-                        <p>
-                            [<abbr title={note_title}>{note}</abbr>]
-                        </p>
-                    )}
                 </Stack>
                 <Stack direction='row'>
                     {course.navigation.map((navigation, index) => buildNavigationButton(navigation, course, index))}
