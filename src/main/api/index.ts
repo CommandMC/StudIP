@@ -84,7 +84,7 @@ class StudIPApi {
     public async verify_token(): Promise<boolean> {
         const profile_res = await this._get('dispatch.php/profile')
         const profile_text = await profile_res.text()
-        return !profile_text.includes('<form name="login"')
+        return !profile_text.includes('id="login-form"')
     }
 
     public get token() {
@@ -138,7 +138,9 @@ class StudIPApi {
         if (!courses_json) return false
         const courses_response_parsed = MyCoursesResponse.safeParse(JSON.parse(courses_json))
         if (!courses_response_parsed.success) {
-            console.error(courses_response_parsed.error.format())
+            console.dir(courses_response_parsed.error.format(), {
+                depth: null
+            })
             return false
         }
         return Object.values(courses_response_parsed.data.courses)
@@ -283,11 +285,16 @@ class StudIPApi {
         if (!files_data || !folder_data) return false
 
         const files: File[] = []
-        let raw_files: RawFile[] = []
+        let parsed_files: unknown = undefined
         try {
-            raw_files = RawFile.array().parse(JSON.parse(files_data))
+            parsed_files = JSON.parse(files_data)
         } catch {}
-        for (const raw_file of raw_files) {
+        const raw_files = RawFile.array().safeParse(parsed_files)
+        if (!raw_files.success) {
+            console.dir(raw_files.error.format(), { depth: null })
+            return false
+        }
+        for (const raw_file of raw_files.data) {
             const file_author_username = raw_file.author_url.match(FILE_AUTHOR_USERNAME_REGEX)?.[1]
             if (!file_author_username) continue
 

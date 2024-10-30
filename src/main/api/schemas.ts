@@ -29,7 +29,6 @@ const CourseBase = z.object({
     avatar: z.string(),
     children: z.array(z.unknown()),
     extra_navigation: CourseExtraNavigation,
-    format: z.string(),
     group: z.number().int(),
     id: z.string(),
     is_deputy: z.boolean(),
@@ -62,9 +61,9 @@ const FilesObjectBase = z.object({
 })
 
 const RawFile = FilesObjectBase.extend({
-    size: z.string().transform(Number),
+    size: z.number(),
     download_url: z.string(),
-    downloads: z.string().transform(Number)
+    downloads: z.number()
 })
 type RawFile = z.infer<typeof RawFile>
 
