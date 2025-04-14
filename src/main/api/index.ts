@@ -7,7 +7,7 @@ const COURSES_DATA_REGEX = /window\.STUDIP\.MyCoursesData = ([\w\W]*?);/m
 const COURSE_TITLE_REGEX = /<div id="context-title">\s*<img .*?>\s*(.*)/m
 const COURSE_TIMESLOTS_REGEX = /<dt>Zeit \/ Veranstaltungsort<\/dt>\s*<dd>\s*([\s\S]*?)\s*<\/dd>/m
 const COURSE_FILES_SUPPORTED_REGEX = /dispatch.php\/course\/files/m
-const TIMESLOT_DATA_REGEX = /(.*?): (\d*?):(\d*?) - (\d*?):(\d*?),.*<em>(.*?)<\/em>/m
+const TIMESLOT_DATA_REGEX = /(.*?): (\d*?):(\d*?) - (\d*?):(\d*?),(?:.*<em>(.*?)<\/em>)?/m
 const TIMESLOT_LOCATIONS_REGEX = /.*?index\/(.*?)\?.*?">(.*?)</g
 const TIMESLOT_SIMPLE_LOCATION_REGEX = /Ort: (.*)/
 const COURSE_ANNOUNCEMENTS_REGEX = /(<article.*news[\s\S]*?<\/article>)/gm
@@ -161,17 +161,9 @@ class StudIPApi {
         for (const timeslot of timeslots_match.split('<br>')) {
             const timeslot_data_match = timeslot.match(TIMESLOT_DATA_REGEX)
             if (!timeslot_data_match) continue
-            const [, weekday_name, start_hour_str, start_minute_str, end_hour_str, end_minute_str, description] =
+            const [, weekday_name, start_hour_str, start_minute_str, end_hour_str, end_minute_str, description = ''] =
                 timeslot_data_match
-            if (
-                !weekday_name ||
-                !start_hour_str ||
-                !start_minute_str ||
-                !end_hour_str ||
-                !end_minute_str ||
-                !description
-            )
-                continue
+            if (!weekday_name || !start_hour_str || !start_minute_str || !end_hour_str || !end_minute_str) continue
             const weekday_id = WEEKDAY_TO_INDEX_MAP[weekday_name]
             if (weekday_id === undefined) continue
 
