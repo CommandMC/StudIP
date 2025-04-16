@@ -61,9 +61,9 @@ const FilesObjectBase = z.object({
 })
 
 const RawFile = FilesObjectBase.extend({
-    size: z.number(),
+    size: z.string().transform(Number),
     download_url: z.string(),
-    downloads: z.number()
+    downloads: z.string().transform(Number)
 })
 type RawFile = z.infer<typeof RawFile>
 
