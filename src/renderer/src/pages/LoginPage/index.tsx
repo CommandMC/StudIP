@@ -5,7 +5,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Autocomplete from '@mui/material/Autocomplete'
 import Snackbar from '@mui/material/Snackbar'
-import LoadingButton from '@mui/lab/LoadingButton'
+import Button from '@mui/material/Button'
 import useUserState from '../../state.ts'
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material'
 
@@ -65,9 +65,9 @@ function LoginPage() {
                                 label='Store password in secure storage'
                             />
                         </FormGroup>
-                        <LoadingButton loading={loggingIn} type='submit' variant='contained' color='success'>
+                        <Button loading={loggingIn} type='submit' variant='contained' color='success'>
                             Login
-                        </LoadingButton>
+                        </Button>
                     </Stack>
                 </Container>
             </form>
