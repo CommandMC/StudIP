@@ -15,14 +15,16 @@
         "@fontsource/roboto": "^5.2.5",
         "@mui/icons-material": "^7.1.1",
         "@mui/material": "^7.1.1",
+        "@types/fs-extra": "^11.0.4",
         "@types/react": "^19.1.6",
         "@types/react-dom": "^19.1.6",
         "@types/source-map-support": "^0.5.10",
         "@vitejs/plugin-react-swc": "^3.10.1",
         "electron": "^36.4.0",
-        "electron-builder": "^26.0.12",
         "electron-vite": "^3.1.0",
+        "esbuild": "^0.25.5",
         "eslint": "^9.28.0",
+        "fs-extra": "^11.3.0",
         "prettier": "^3.5.3",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
@@ -36,8 +38,9 @@
     },
     "scripts": {
         "dev": "GTK_USE_PORTAL=1 electron-vite dev",
-        "postinstall": "electron-builder install-app-deps",
-        "build": "electron-vite build && electron-builder"
+        "build": "electron-vite build",
+        "write-pkgbuild": "esbuild --bundle --platform=node --target=node21 meta/pacman_package.ts | node",
+        "pacman-package": "pnpm write-pkgbuild && pushd ./dist && makepkg && popd"
     },
     "packageManager": "pnpm@10.11.1+sha512.e519b9f7639869dc8d5c3c5dfef73b3f091094b0a006d7317353c72b124e80e1afd429732e28705ad6bfa1ee879c1fce46c128ccebd3192101f43dd67c667912"
 }
