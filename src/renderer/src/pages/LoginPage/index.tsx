@@ -6,8 +6,11 @@ import Stack from '@mui/material/Stack'
 import Autocomplete from '@mui/material/Autocomplete'
 import Snackbar from '@mui/material/Snackbar'
 import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormGroup from '@mui/material/FormGroup'
+
 import useUserState from '../../state.ts'
-import { Checkbox, FormControlLabel, FormGroup } from '@mui/material'
 
 const KNOWN_STUDIP_HOSTS = ['https://studip.uni-osnabrueck.de/']
 
