@@ -1,8 +1,6 @@
 import { createRoot } from 'react-dom/client'
 import { createHashRouter, RouterProvider } from 'react-router-dom'
 
-import LoadingComponent from './components/LoadingComponent.tsx'
-
 import type { ComponentType } from 'react'
 
 import '@fontsource/roboto/300.css'
@@ -19,7 +17,7 @@ async function lazyDefaultExport(importedFile: Promise<Record<'default', Compone
 const router = createHashRouter([
     {
         path: '/',
-        hydrateFallbackElement: <LoadingComponent />,
+        hydrateFallbackElement: <></>,
         lazy: () => lazyDefaultExport(import('./pages/MainPage')),
         children: [
             {
