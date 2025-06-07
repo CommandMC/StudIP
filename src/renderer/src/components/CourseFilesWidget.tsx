@@ -238,7 +238,11 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
                             >
                                 {is_synchronizing ? <DownloadingIcon /> : <DownloadDoneIcon />}
                                 Synchronizing to&nbsp;
-                                <MuiLink sx={{ cursor: 'pointer' }} onClick={() => IPC.open_path(synchronized_folder)}>
+                                <MuiLink
+                                    sx={{ cursor: 'pointer' }}
+                                    underline='hover'
+                                    onClick={() => IPC.open_path(synchronized_folder)}
+                                >
                                     {synchronized_folder}
                                 </MuiLink>
                             </Box>
