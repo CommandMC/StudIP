@@ -5,8 +5,8 @@ import { createWriteStream, type Stats } from 'fs'
 import { stat, mkdir, writeFile, readFile } from 'fs/promises'
 
 import { StudIPApi } from './api'
-import appIconLight from '../../build/icon_light.png?asset'
-import appIconDark from '../../build/icon_dark.png?asset'
+import iconColor from '../../assets/icon_color.png?asset'
+import iconWhite from '../../assets/icon_white.png?asset'
 import { File, Folder } from './api/interfaces.ts'
 
 let g_api: StudIPApi
@@ -16,7 +16,7 @@ function createWindow() {
     g_window = new BrowserWindow({
         width: 1280,
         height: 720,
-        icon: nativeTheme.shouldUseDarkColors ? appIconDark : appIconLight,
+        icon: nativeTheme.shouldUseDarkColors ? iconWhite : iconColor,
         webPreferences: {
             preload: join(__dirname, '../preload/index.js')
         },
