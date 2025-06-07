@@ -165,6 +165,8 @@ ipcMain.handle('open_file', async (_e, sync_path: string, relative_folder_path: 
 
 ipcMain.handle('open_path', async (_e, path: string) => shell.openPath(path))
 
+ipcMain.handle('open_url', async (_e, url: string) => shell.openExternal(url))
+
 ipcMain.handle('ready', () => g_window.show())
 
 app.whenReady().then(createWindow)
