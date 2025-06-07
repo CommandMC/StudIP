@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import Paper from '@mui/material/Paper'
 import Button from '@mui/material/Button'
 import MuiLink from '@mui/material/Link'
+import Breadcrumbs from '@mui/material/Breadcrumbs'
 
 import FolderIcon from '@mui/icons-material/Folder'
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile'
@@ -185,17 +186,20 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
     return (
         <Paper sx={{ padding: 1 }}>
             <Stack spacing={2}>
-                <Stack direction='row'>
+                <Stack direction='row' gap={1}>
                     Currently selected:
-                    <Stack sx={{ marginLeft: 1 }} direction='row'>
-                        {selected_files_stack
-                            .map<ReactNode>(({ label }, index) => (
-                                <Box key={index} sx={{ cursor: 'pointer' }} onClick={() => on_history_click(index)}>
-                                    {label}
-                                </Box>
-                            ))
-                            .reduce((prev, curr) => [prev, ' / ', curr])}
-                    </Stack>
+                    <Breadcrumbs>
+                        {selected_files_stack.map(({ label }, index) => (
+                            <MuiLink
+                                key={index}
+                                sx={{ cursor: 'pointer' }}
+                                underline='hover'
+                                onClick={() => on_history_click(index)}
+                            >
+                                {label}
+                            </MuiLink>
+                        ))}
+                    </Breadcrumbs>
                 </Stack>
                 <Stack>
                     {currently_displayed_filelist.folders.map((folder) => (
