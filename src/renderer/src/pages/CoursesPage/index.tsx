@@ -16,6 +16,7 @@ import BarChart from '@mui/icons-material/BarChart'
 import PhotoCamera from '@mui/icons-material/PhotoCamera'
 import OndemandVideo from '@mui/icons-material/OndemandVideo'
 import TaskAlt from '@mui/icons-material/TaskAlt'
+import Assignment from '@mui/icons-material/Assignment'
 import Article from '@mui/icons-material/Article'
 import LiveTv from '@mui/icons-material/LiveTv'
 import LinkIcon from '@mui/icons-material/Link'
@@ -88,6 +89,9 @@ function buildNavigationButton(nav: Course['navigation'][number], course: Course
             break
         case 'link-extern':
             innerIcon = <LinkIcon />
+            break
+        case 'assessment':
+            innerIcon = <Assignment />
             break
     }
 
