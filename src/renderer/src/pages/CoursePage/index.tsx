@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
@@ -7,10 +8,13 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
 import Paper from '@mui/material/Paper'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import CommentIcon from '@mui/icons-material/Comment'
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser'
 
 import LoadingComponent from '../../components/LoadingComponent.tsx'
 import CourseFilesWidget from '../../components/CourseFilesWidget.tsx'
@@ -99,12 +103,25 @@ function CoursePage() {
 
     const { course_info, course_files } = useCourseData(course_id)
 
+    const open_course_page_on_studip = useCallback(() => {
+        const session_server = localStorage.getItem('session_server')
+        if (!session_server) return
+        IPC.open_url(`${session_server}seminar_main.php?auswahl=${course_id}`)
+    }, [course_id])
+
     if (course_info === undefined) return <LoadingComponent />
     if (course_info === false) return <>Failed to fetch Course Info</>
 
     return (
         <Box sx={{ paddingLeft: 3, paddingRight: 3 }}>
-            <Typography variant='h4'>{course_info.title}</Typography>
+            <Box display='flex' justifyContent='space-between'>
+                <Typography variant='h4'>{course_info.title}</Typography>
+                <Tooltip title='Open on StudIP'>
+                    <IconButton onClick={open_course_page_on_studip}>
+                        <OpenInBrowserIcon />
+                    </IconButton>
+                </Tooltip>
+            </Box>
             {course_info.announcements.length > 0 && (
                 <>
                     <Typography variant='h6' sx={{ marginTop: 3 }}>
