@@ -11,46 +11,44 @@ import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import './index.css'
 
-function makeLazyFunc(importedFile: Promise<Record<'default', ComponentType>>) {
-    return async () => {
-        const component = await importedFile
-        return { Component: component.default }
-    }
+async function lazyDefaultExport(importedFile: Promise<Record<'default', ComponentType>>) {
+    const component = await importedFile
+    return { Component: component.default }
 }
 
 const router = createHashRouter([
     {
         path: '/',
         hydrateFallbackElement: <LoadingComponent />,
-        lazy: makeLazyFunc(import('./pages/MainPage')),
+        lazy: () => lazyDefaultExport(import('./pages/MainPage')),
         children: [
             {
                 path: 'courses',
-                lazy: makeLazyFunc(import('./pages/CoursesPage'))
+                lazy: () => lazyDefaultExport(import('./pages/CoursesPage'))
             },
             {
                 path: 'login',
-                lazy: makeLazyFunc(import('./pages/LoginPage'))
+                lazy: () => lazyDefaultExport(import('./pages/LoginPage'))
             },
             {
                 path: 'course/:course_id',
-                lazy: makeLazyFunc(import('./pages/CoursePage'))
+                lazy: () => lazyDefaultExport(import('./pages/CoursePage'))
             },
             {
                 path: 'course/:course_id/forum',
-                lazy: makeLazyFunc(import('./pages/ForumPage'))
+                lazy: () => lazyDefaultExport(import('./pages/ForumPage'))
             },
             {
                 path: 'course/:course_id/files',
-                lazy: makeLazyFunc(import('./pages/CourseFilesPage'))
+                lazy: () => lazyDefaultExport(import('./pages/CourseFilesPage'))
             },
             {
                 path: 'messages',
-                lazy: makeLazyFunc(import('./pages/MessagesPage'))
+                lazy: () => lazyDefaultExport(import('./pages/MessagesPage'))
             },
             {
                 path: 'message/:message_id',
-                lazy: makeLazyFunc(import('./pages/MessagePage'))
+                lazy: () => lazyDefaultExport(import('./pages/MessagePage'))
             }
         ]
     }
