@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 import { Course, MyCoursesResponse, RawFile, RawFolder } from './schemas.ts'
 import type { CourseMetadata, File, Folder, Message, MessageDetails } from './interfaces.ts'
 
@@ -138,9 +140,7 @@ class StudIPApi {
         if (!courses_json) return false
         const courses_response_parsed = MyCoursesResponse.safeParse(JSON.parse(courses_json))
         if (!courses_response_parsed.success) {
-            console.dir(courses_response_parsed.error.format(), {
-                depth: null
-            })
+            console.error(z.formatError(courses_response_parsed.error))
             return false
         }
         return Object.values(courses_response_parsed.data.courses)
@@ -283,7 +283,7 @@ class StudIPApi {
         } catch {}
         const raw_files = RawFile.array().safeParse(parsed_files)
         if (!raw_files.success) {
-            console.dir(raw_files.error.format(), { depth: null })
+            console.error(z.formatError(raw_files.error))
             return false
         }
         for (const raw_file of raw_files.data) {
