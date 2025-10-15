@@ -1,14 +1,14 @@
-const eslint = require('@eslint/js')
-const tseslint = require('typescript-eslint')
+import eslint from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import { defineConfig } from 'eslint/config'
 
-module.exports = tseslint.config(
+export default defineConfig(
     eslint.configs.recommended,
     ...tseslint.configs.strictTypeChecked,
     {
         languageOptions: {
             parserOptions: {
-                project: true,
-                tsconfigRootDir: __dirname
+                projectService: true
             }
         },
         files: ['**/*.ts', '**/*.tsx'],
@@ -44,6 +44,6 @@ module.exports = tseslint.config(
         }
     },
     {
-        ignores: ['out', 'dist', 'eslint.config.js']
+        ignores: ['out', 'dist', 'eslint.config.mjs']
     }
 )
