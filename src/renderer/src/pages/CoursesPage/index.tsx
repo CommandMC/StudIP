@@ -20,6 +20,7 @@ import Assignment from '@mui/icons-material/Assignment'
 import Article from '@mui/icons-material/Article'
 import LiveTv from '@mui/icons-material/LiveTv'
 import LinkIcon from '@mui/icons-material/Link'
+import InfoIcon from '@mui/icons-material/Info'
 import LoadingComponent from '../../components/LoadingComponent.tsx'
 import useUserState from '../../state.ts'
 
@@ -93,6 +94,8 @@ function buildNavigationButton(nav: Course['navigation'][number], course: Course
         case 'assessment':
             innerIcon = <Assignment />
             break
+        case 'infopage':
+            innerIcon = <InfoIcon />
     }
 
     if (!innerIcon) {
