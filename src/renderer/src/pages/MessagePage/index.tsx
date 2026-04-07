@@ -32,7 +32,7 @@ function MessagePage() {
         <Card sx={{ padding: 1, margin: 2 }}>
             <Stack direction='row' spacing={2}>
                 <Typography variant='h5'>{this_message.title}</Typography>
-                <Box flexGrow={1} />
+                <Box sx={{ flexGrow: 1 }} />
                 <Stack direction='row'>
                     <PersonIcon />
                     <Link to={`/user/${this_message.author.username}`}>{this_message.author.full_name}</Link>

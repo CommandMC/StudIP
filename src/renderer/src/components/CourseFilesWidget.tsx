@@ -52,7 +52,7 @@ function FileWidget({ file, on_file_click }: FileWidgetProps) {
                 <Link to={`/user/${file.author.username}`}>{file.author.full_name}</Link>
             </Box>
             {file_size(file.size)}
-            <Box flexGrow={1} />
+            <Box sx={{ flexGrow: 1 }} />
             <Box title={new Date(file.date_modified * 1000).toString()}>Modified: {fuzzy_date(file.date_modified)}</Box>
         </Stack>
     )
@@ -77,7 +77,7 @@ function FolderWidget({ folder, on_folder_click }: FolderWidgetProps) {
                 <Link to={`/user/${folder.author.username}`}>{folder.author.full_name}</Link>
             </Box>
             {folder.contents.files.length} files, {folder.contents.folders.length} folders
-            <Box flexGrow={1} />
+            <Box sx={{ flexGrow: 1 }} />
             <Box title={new Date(folder.date_created * 1000).toString()}>
                 Created: {fuzzy_date(folder.date_created)}
             </Box>
@@ -186,7 +186,7 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
     return (
         <Paper sx={{ padding: 1 }}>
             <Stack spacing={2}>
-                <Stack direction='row' gap={1}>
+                <Stack direction='row' sx={{ gap: 1 }}>
                     Currently selected:
                     <Breadcrumbs>
                         {selected_files_stack.map(({ label }, index) => (
@@ -221,7 +221,7 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
                             >
                                 Not synchronized
                             </Box>
-                            <Box flexGrow={1} />
+                            <Box sx={{ flexGrow: 1 }} />
                             <Button color='success' onClick={on_add_sync_button_click}>
                                 Synchronize
                             </Button>
@@ -246,7 +246,7 @@ function CourseFilesWidget({ files, course_id }: CourseFilesWidgetProps) {
                                     {synchronized_folder}
                                 </MuiLink>
                             </Box>
-                            <Box flexGrow={1} />
+                            <Box sx={{ flexGrow: 1 }} />
                             <Button onClick={on_sync_button_click} disabled={is_synchronizing} startIcon={<LoopIcon />}>
                                 Sync now
                             </Button>

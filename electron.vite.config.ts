@@ -1,5 +1,5 @@
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
-import react from '@vitejs/plugin-react-swc'
+import { defineConfig } from 'electron-vite'
+import react from '@vitejs/plugin-react'
 import type { BuildOptions } from 'vite'
 
 export default defineConfig(({ mode }) => {
@@ -10,12 +10,10 @@ export default defineConfig(({ mode }) => {
 
     return {
         main: {
-            build: commonBuildOptions,
-            plugins: [externalizeDepsPlugin()]
+            build: { ...commonBuildOptions, externalizeDeps: true }
         },
         preload: {
-            build: commonBuildOptions,
-            plugins: [externalizeDepsPlugin()]
+            build: { ...commonBuildOptions, externalizeDeps: true }
         },
         renderer: {
             build: commonBuildOptions,

@@ -11,7 +11,7 @@ function CourseFilesPage() {
 
     const { course_files } = useCourseData(course_id)
     return (
-        <Box margin={1}>
+        <Box sx={{ margin: 1 }}>
             <Typography variant='h5'>Course Files:</Typography>
             <CourseFilesWidget files={course_files} course_id={course_id} />
         </Box>

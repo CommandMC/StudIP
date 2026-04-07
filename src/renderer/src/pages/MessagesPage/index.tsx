@@ -18,13 +18,13 @@ function MessageWidget({ message }: MessageWidgetProps) {
     return (
         <Card>
             <Stack direction='row' spacing={1}>
-                <Box width='60%'>
+                <Box sx={{ width: '60%' }}>
                     <Link to={`/message/${message.id}`}>{message.title}</Link>
                 </Box>
-                <Box width='20%'>
+                <Box sx={{ width: '20%' }}>
                     <Link to={`/user/${message.author.username}`}>{message.author.full_name}</Link>
                 </Box>
-                <Box width='20%'>{fuzzy_date(new Date(message.send_time))}</Box>
+                <Box sx={{ width: '20%' }}>{fuzzy_date(new Date(message.send_time))}</Box>
             </Stack>
         </Card>
     )

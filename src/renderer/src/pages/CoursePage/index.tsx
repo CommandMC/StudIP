@@ -32,7 +32,7 @@ function AnnouncementCard({ announcement }: AnnouncementCardProps) {
             </AccordionSummary>
             <AccordionDetails>
                 <Stack direction='row' spacing={1}>
-                    <Box flexGrow={1} />
+                    <Box sx={{ flexGrow: 1 }} />
                     <Typography>
                         <Link to={`/user/${announcement.author.username}`}>{announcement.author.full_name}</Link>
                     </Typography>
@@ -78,7 +78,7 @@ function TimeslotCard({ timeslot }: TimeslotCardProps) {
                     {timeslot.start_time.minute.toString().padStart(2, '0')} - {timeslot.end_time.hour}:
                     {timeslot.end_time.minute.toString().padStart(2, '0')}
                 </Box>
-                <Box flexGrow={1} />
+                <Box sx={{ flexGrow: 1 }} />
                 {timeslot.locations.length > 0 && (
                     <Stack direction='row' spacing={1}>
                         {timeslot.locations.map((location) => {
@@ -114,7 +114,7 @@ function CoursePage() {
 
     return (
         <Box sx={{ paddingLeft: 3, paddingRight: 3 }}>
-            <Box display='flex' justifyContent='space-between'>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant='h4'>{course_info.title}</Typography>
                 <Tooltip title='Open on StudIP'>
                     <IconButton onClick={open_course_page_on_studip}>
