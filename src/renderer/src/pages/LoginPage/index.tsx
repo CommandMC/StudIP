@@ -1,4 +1,4 @@
-import { useState, type FormEventHandler } from 'react'
+import { useState, type SubmitEventHandler } from 'react'
 
 import TextField from '@mui/material/TextField'
 import Container from '@mui/material/Container'
@@ -21,8 +21,10 @@ function LoginPage() {
 
     const set_logged_in = useUserState((state) => state.set_logged_in)
 
-    const login: FormEventHandler = (event) => {
-        const target = event.target as EventTarget & Record<'username' | 'password' | 'server', HTMLInputElement>
+    const login: SubmitEventHandler = (event) => {
+        const target = event.target as EventTarget &
+            HTMLFormElement &
+            Record<'username' | 'password' | 'server', HTMLInputElement>
         IPC.login(target.username.value, target.password.value, target.server.value).then((token_or_false) => {
             if (token_or_false) {
                 localStorage.setItem('session_token', token_or_false)
