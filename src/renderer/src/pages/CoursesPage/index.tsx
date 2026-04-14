@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import type { Course } from '../../../../main/api/schemas.ts'
 
@@ -22,7 +22,7 @@ import LiveTv from '@mui/icons-material/LiveTv'
 import LinkIcon from '@mui/icons-material/Link'
 import InfoIcon from '@mui/icons-material/Info'
 import LoadingComponent from '../../components/LoadingComponent.tsx'
-import useUserState from '../../state.ts'
+import useUserState, { cached_user_data } from '../../state.ts'
 
 interface CourseWidgetProps {
     course: Course
@@ -128,13 +128,20 @@ function buildNavigationButton(nav: Course['navigation'][number], course: Course
 }
 
 const CourseWidget = React.memo(({ course }: CourseWidgetProps) => {
+    const course_info = cached_user_data((state) => state.course_metadata[course.id])
+    const singleTimeslotDescription = useMemo(() => {
+        if (!course_info) return null
+        if (course_info.timeslots.length !== 1) return null
+        return course_info.timeslots[0]?.description ?? null
+    }, [course_info])
+
     return (
         <Card>
             <Stack direction='row' spacing={1}>
                 <img src={course.avatar} width={30} height={30} alt='Course Avatar' />
                 <Stack sx={{ width: '50%' }} direction='row' spacing={0.5}>
                     <Link to={`/course/${course.id}`} style={{ textDecoration: 'none' }}>
-                        {course.name}
+                        {singleTimeslotDescription ? `${course.name} (${singleTimeslotDescription})` : course.name}
                     </Link>
                 </Stack>
                 <Stack direction='row'>

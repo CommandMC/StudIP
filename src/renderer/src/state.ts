@@ -127,3 +127,4 @@ const cached_user_data = create<CacheState>()(
 )
 
 export default useUserState
+export { cached_user_data }
